@@ -12,16 +12,20 @@
 <div class="result-page">
 
     <header class="navbar">
-        <a href="/" class="logo">Cine<span>Feel</span></a>
+        <div class="nav-left">
+            <a href="/html/index.html" class="logo">Cine<span>Feel</span></a>
 
-        <nav>
-            <a href="/">홈</a>
-            <a href="/html/list.html">영화목록</a>
-        </nav>
+            <nav class="nav-menu">
+                <a href="/html/index.html">홈</a>
+                <a href="/html/list.html">영화목록</a>
+            </nav>
+        </div>
 
-        <div class="nav-icons">
-            <a href="/html/login.html">로그인</a>
-            <a href="/html/signup.html">회원가입</a>
+        <div class="nav-right">
+            <div class="auth-menu">
+                <a href="/html/login.html">로그인</a>
+                <a href="/html/signup.html">회원가입</a>
+            </div>
         </div>
     </header>
 
@@ -35,6 +39,34 @@
         <section class="result-card">
 
             <h2>당신의 리뷰 분석 결과</h2>
+
+            <!-- 리뷰한 영화 정보 -->
+            <div class="reviewed-movie-box" id="reviewedMovieBox">
+
+                <div class="reviewed-poster-wrap">
+                    <img id="reviewedMoviePoster"
+                        src="/images/no-image.png"
+                        alt="리뷰한 영화 포스터">
+                </div>
+
+                <div class="reviewed-movie-info">
+
+                    <span class="reviewed-label">리뷰한 영화</span>
+
+                    <div class="reviewed-title-row">
+                        <h3 id="reviewedMovieTitle">영화 제목</h3>
+                    </div>
+
+                    <p id="reviewedMovieGenre">장르</p>
+
+                    <div class="review-text-box">
+                        <strong>내가 작성한 리뷰</strong>
+                        <p id="reviewText">리뷰 내용</p>
+                    </div>
+
+                </div>
+
+            </div>
 
             <div class="result-summary">
 
@@ -102,7 +134,7 @@
                 <h2>감성 분석 기반 추천 영화</h2>
 
                 <p>
-                    AI가 리뷰 감정과 선택한 영화를 기반으로 추천한 영화입니다.
+                    AI의 리뷰 감성 분석과 선택한 영화를 기반으로 추천한 영화입니다.
                 </p>
 
                 <div class="recommend-grid" id="recommendGrid">
