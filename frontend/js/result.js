@@ -1,132 +1,139 @@
-const savedData = sessionStorage.getItem("analysisResult");
+const API_BASE_URL = "";
 
-const movieTitle = document.getElementById("movieTitle");
-const movieGenre = document.getElementById("movieGenre");
-const reviewText = document.getElementById("reviewText");
+document.addEventListener("DOMContentLoaded", () => {
+    loadResult();
+});
 
-const sentimentFace = document.getElementById("sentimentFace");
-const sentimentText = document.getElementById("sentimentText");
-const positivePercent = document.getElementById("positivePercent");
-const progressFill = document.getElementById("progressFill");
-const positiveRatio = document.getElementById("positiveRatio");
-const negativeRatio = document.getElementById("negativeRatio");
+async function loadResult() {
+    const review = sessionStorage.getItem("review");
+    const movieId = sessionStorage.getItem("movieId");
 
-const sentimentLabel = document.getElementById("sentimentLabel");
-const positiveStandard = document.getElementById("positiveStandard");
-const negativeStandard = document.getElementById("negativeStandard");
-const expectedRating = document.getElementById("expectedRating");
-
-const recommendGrid = document.getElementById("recommendGrid");
-
-if (!savedData) {
-    alert("분석 결과가 없습니다.");
-    location.href = "./list.html";
-} else {
-    const data = JSON.parse(savedData);
-
-    const movie = data.movie;
-    const review = data.review;
-    const analysis = data.analysis;
-
-    const positive = Math.round(analysis.positive_prob * 100);
-    const negative = 100 - positive;
-
-    movieTitle.textContent = movie.title || "-";
-    movieGenre.textContent = movie.genre || "-";
-    reviewText.textContent = review || "-";
-
-    positivePercent.textContent = positive;
-    positiveRatio.textContent = positive;
-    negativeRatio.textContent = negative;
-
-    positiveStandard.textContent = positive;
-    negativeStandard.textContent = negative;
-
-    expectedRating.textContent = analysis.expected_rating || "0.0";
-
-    progressFill.style.width = `${positive}%`;
-
-    sentimentLabel.textContent = analysis.sentiment;
-
-    if (analysis.sentiment === "긍정") {
-        sentimentFace.textContent = "😊";
-        sentimentFace.classList.add("positive-face");
-
-        sentimentText.textContent = "긍정 리뷰";
-        sentimentText.classList.add("positive-text");
-    } else {
-        sentimentFace.textContent = "😢";
-        sentimentFace.classList.add("negative-face");
-
-        sentimentText.textContent = "부정 리뷰";
-        sentimentText.classList.add("negative-text");
+    if (!review || !movieId) {
+        alert("작성된 리뷰가 없습니다.");
+        location.href = "/html/list.html";
+        return;
     }
 
-    loadRecommendations(movie.title);
-}
-
-async function loadRecommendations(title) {
     try {
-        const response = await fetch("http://127.0.0.1:8000/recommend", {
+        // 1. 영화 정보 조회
+        const movieResponse = await fetch(`${API_BASE_URL}/movies/${movieId}`);
+
+        if (!movieResponse.ok) {
+            throw new Error("영화 정보 조회 실패");
+        }
+
+        const movie = await movieResponse.json();
+
+        // 2. 감성 분석
+        const analyzeResponse = await fetch(`${API_BASE_URL}/analyze`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                movie_title: title,
-                top_n: 4
+                review: review
             })
         });
 
-        const data = await response.json();
-
-        const recommendations = data.recommendations || [];
-
-        if (recommendations.length === 0) {
-            recommendGrid.innerHTML = `
-                <p style="color:#999;">추천 영화가 없습니다.</p>
-            `;
-            return;
+        if (!analyzeResponse.ok) {
+            throw new Error("감성 분석 실패");
         }
 
-        recommendGrid.innerHTML = "";
+        const result = await analyzeResponse.json();
 
-        recommendations.forEach(movie => {
-            const card = document.createElement("a");
-            card.className = "recommend-card";
+        console.log("감성 분석 결과:", result);
 
-            if (movie.id) {
-                card.href = `./detail.html?id=${movie.id}`;
-            } else {
-                card.href = "./list.html";
-            }
+        const positiveProb = result.positive_prob || 0;
+        const positivePercent = Math.round(positiveProb * 100);
+        const negativePercent = 100 - positivePercent;
+        const sentiment = result.sentiment || "-";
+        const expectedRating = result.expected_rating || 0;
 
-            card.innerHTML = `
-                <img src="${movie.poster_url || 'https://via.placeholder.com/240x320?text=No+Image'}"
-                    alt="추천 영화 포스터">
+        // 3. 결과 화면 출력
+        const isPositive = sentiment === "긍정";
 
-                <div class="recommend-info">
-                    <h3>${movie.title || "제목 없음"}</h3>
+        document.getElementById("sentimentFace").textContent = isPositive ? "😊" : "😢";
+        document.getElementById("sentimentText").textContent = isPositive ? "긍정 리뷰" : "부정 리뷰";
+        document.getElementById("sentimentLabel").textContent = sentiment;
 
-                    <div class="recommend-rating">
-                        ${movie.genre || "장르 정보 없음"}
-                    </div>
+        document.getElementById("positivePercent").textContent = positivePercent;
+        document.getElementById("positiveRatio").textContent = positivePercent;
+        document.getElementById("positiveStandard").textContent = positivePercent;
 
-                    <div class="recommend-match">
-                        🔥 매칭률
-                        <span>${movie.match_score || 0}</span>%
-                    </div>
-                </div>
-            `;
+        document.getElementById("negativeRatio").textContent = negativePercent;
+        document.getElementById("negativeStandard").textContent = negativePercent;
 
-            recommendGrid.appendChild(card);
+        document.getElementById("expectedRating").textContent = expectedRating;
+
+        const progressFill = document.getElementById("progressFill");
+        progressFill.style.width = `${positivePercent}%`;
+
+        // 4. 추천 영화 조회
+        const recommendResponse = await fetch(`${API_BASE_URL}/recommend`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                movie_title: movie.title,
+                top_n: 5
+            })
         });
+
+        if (!recommendResponse.ok) {
+            throw new Error("추천 영화 조회 실패");
+        }
+
+        const recommendData = await recommendResponse.json();
+
+        console.log("추천 결과:", recommendData);
+
+        renderRecommendations(recommendData.recommendations || []);
 
     } catch (error) {
         console.error(error);
-
-        recommendGrid.innerHTML = `
-            <p style="color:#999;">추천 영화를 불러오지 못했습니다.</p>
-        `;
+        alert("분석 결과를 불러오지 못했습니다.");
     }
+}
+
+function renderRecommendations(recommendations) {
+    const recommendGrid = document.getElementById("recommendGrid");
+
+    if (!recommendations || recommendations.length === 0) {
+        recommendGrid.innerHTML = `<p style="color:#999;">추천 영화가 없습니다.</p>`;
+        return;
+    }
+
+    recommendGrid.innerHTML = "";
+
+    recommendations.forEach(movie => {
+        const title = movie["영화제목"] || movie.title || "영화 제목";
+        const genre = movie["장르"] || movie.genre || "장르 없음";
+        const matchScore = movie["매칭률(%)"] || movie.match_score || 0;
+        const posterUrl = movie.poster_url || movie.posterUrl || "";
+        const movieID  = movie.id || "";
+
+        const card = document.createElement("a");
+        card.className = "recommend-card";
+        card.href = `/html/detail.html?id=${movieId}`;
+        card.style.textDecoration = "none";
+        card.style.color = "inherit";
+
+        card.innerHTML = `
+            ${posterUrl ? `<img src="${posterUrl}" alt="추천 영화 포스터">` : ""}
+            <div class="recommend-info">
+                <h3>${title}</h3>
+
+                <div class="recommend-rating">
+                    🎬 ${genre}
+                </div>
+
+                <div class="recommend-match">
+                    🔥 매칭률 ${matchScore}%
+                </div>
+            </div>
+        `;
+
+        recommendGrid.appendChild(card);
+    });
 }

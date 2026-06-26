@@ -1,5 +1,9 @@
+fastapi
+uvicorn
+pymysql
 pandas
 numpy
 scikit-learn
 konlpy
 joblib
+python-multipart

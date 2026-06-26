@@ -1,98 +1,78 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <title>리뷰 작성 - CineFeel</title>
 
-    <link rel="stylesheet" href="../css/review-write.css">
-
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap"
-          rel="stylesheet">
+    <link rel="stylesheet" href="/css/review-write.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
 <header class="topbar">
-
-    <a href="./index.html" class="logo">
-        CineFeel
-    </a>
+    <a href="/" class="logo">CineFeel</a>
 
     <nav class="nav-menu">
-        <a href="./index.html">홈</a>
-        <a href="./list.html">영화목록</a>
+        <a href="/">홈</a>
+        <a href="/html/list.html">영화목록</a>
     </nav>
 
     <div class="top-right">
-        <a href="./login.html">로그인</a>
-        <a href="./signup.html">회원가입</a>
+        <a href="/html/login.html">로그인</a>
+        <a href="/html/signup.html">회원가입</a>
     </div>
-
 </header>
 
 <div class="review-container">
-
     <div class="review-card">
 
-        <!-- 영화 정보 -->
         <div class="movie-info">
-
-            <img id="poster" alt="영화 포스터">
+            <img id="moviePoster" src="" alt="영화 포스터">
 
             <div class="movie-text">
-
                 <h2 id="movieTitle">영화 제목</h2>
 
                 <p>
-                    <span id="genre">장르</span>
+                    <span id="movieGenre">장르</span>
                     /
-                    <span id="releaseDate">개봉일</span>
+                    <span id="movieReleaseDate">개봉일</span>
                 </p>
 
                 <div class="movie-rating">
-                    ⭐ <span id="rating">0.0</span>
+                    ⭐ <span id="movieRating">4.5</span>
                 </div>
-
             </div>
-
         </div>
 
         <div class="divider"></div>
 
-        <h3 class="review-title">
-            리뷰를 작성해주세요
-        </h3>
+        <h3 class="review-title">리뷰를 작성해주세요</h3>
 
         <p class="review-sub">
             이 영화는 어떤 느낌이었나요?
         </p>
 
         <form id="reviewForm">
-
             <div class="review-box">
-
-                <textarea id="reviewInput"
+                <textarea id="reviewContent"
                           maxlength="500"
                           required
                           placeholder="영화를 보고 느낀 감정을 자유롭게 작성해주세요."></textarea>
-
             </div>
 
             <p class="notice">
-                ⓘ 입력한 리뷰를 AI가 감성 분석합니다.
+                ⓘ 욕설, 비방, 스포일러는 제한될 수 있어요.
             </p>
 
             <button type="submit" class="analyze-btn">
                 감성 분석하기
             </button>
-
         </form>
 
     </div>
-
 </div>
 
-<script src="../js/review-write.js"></script>
+<script src="/js/review-write.js?v=2"></script>
 </body>
 </html>

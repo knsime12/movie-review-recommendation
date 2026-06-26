@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "";
 
 document.addEventListener("DOMContentLoaded", () => {
     loadPopularMovies();
@@ -22,10 +22,17 @@ async function loadPopularMovies() {
             const card = document.createElement("div");
             card.className = "movie-card";
 
+            const posterUrl = movie.poster_url || movie.posterUrl || "";
+            const detailUrl = `/html/detail.html?id=${movie.id}`;
+
             card.innerHTML = `
-                <a href="./detail.html?id=${movie.id}">
+                <a href="${detailUrl}">
                     <div class="movie-poster-wrap">
-                        <img src="${movie.poster_url || '../images/no-image.png'}" alt="영화 포스터">
+                        ${
+                            posterUrl
+                            ? `<img src="${posterUrl}" alt="영화 포스터">`
+                            : `<div style="color:white;">NO IMAGE</div>`
+                        }
 
                         <div class="movie-overlay">
                             <span>상세보기</span>

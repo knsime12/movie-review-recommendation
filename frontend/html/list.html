@@ -1,69 +1,55 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <title>영화 목록 - CineFeel</title>
 
-    <link rel="stylesheet" href="../css/index.css">
-    <link rel="stylesheet" href="../css/movie.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/movie.css?v=30">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
-
 <div class="container">
 
-    <!-- navbar -->
     <header class="navbar">
-        <div class="nav-left">
-            <a href="./index.html" class="logo">Cine<span>Feel</span></a>
+        <a href="/" class="logo">Cine<span>Feel</span></a>
 
-            <nav class="nav-menu">
-                <a href="./index.html">홈</a>
-                <a href="./list.html">영화목록</a>
-            </nav>
-        </div>
+        <nav>
+            <a href="/">홈</a>
+            <a href="/html/list.html">영화목록</a>
+        </nav>
 
-        <div class="nav-right">
-            <input type="text" class="search-input" placeholder="영화를 검색하세요">
+        <div class="nav-icons">
+            <a href="/html/login.html">로그인</a>
+            <a href="/html/signup.html">회원가입</a>
         </div>
     </header>
 
     <section class="movie-page">
 
-        <!-- 헤더 -->
         <div class="movie-header">
-
             <div>
                 <h1>🎬 영화 목록</h1>
             </div>
 
-            <form class="search-form" id="searchForm">
-                <input type="text"
-                       id="searchInput"
-                       placeholder="영화 제목 검색">
-
-                <button type="submit">
-                    검색
-                </button>
-
+            <form id="searchForm" class="search-form">
+                <input type="text" id="keywordInput" placeholder="영화 제목 검색">
+                <button type="submit">검색</button>
             </form>
-
         </div>
 
-        <!-- 영화 목록 -->
         <div class="movie-grid" id="movieGrid">
-            <!-- JS로 영화 카드 생성 -->
+            <p style="color:white;">영화 목록을 불러오는 중입니다...</p>
         </div>
+
+        <div class="pagination" id="pagination"></div>
+
     </section>
 
 </div>
 
-<script src="../js/movie.js"></script>
+<script src="/js/movie.js"></script>
 </body>
 </html>

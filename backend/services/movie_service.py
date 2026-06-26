@@ -1,33 +1,86 @@
 from database import get_connection
 
-def get_movies():
+def get_movies(keyword="", page=1, size=12):
+    offset = (page - 1) * size
+    
+    
     conn = get_connection()
-
-    try:
-        with conn.cursor() as cursor:
-            sql = """
-            SELECT
-                id,
-                title,
-                genre,
-                director,
-                actors,
-                release_date,
-                poster_url,
-                overview
-            FROM movies
-            ORDER BY id DESC
-            """
-
-            cursor.execute(sql)
-            movies = cursor.fetchall()
-
-            return movies
+    cursor = conn.cursor()
+    
+    if keyword:
+        count_query = """
+        SELECT COUNT(*) AS total
+        FROM movies
+        WHERE title LIKE %s
+        """
         
-    finally:
-        conn.close()
+        
+        cursor.execute(count_query, (f"%{keyword}%",))
+        total = cursor.fetchone()["total"]
 
-def get_movie(movie_id):
+
+        query = """
+        SELECT
+            id,
+            title,
+            genre,
+            director,
+            actors,
+            overview,
+            release_date,
+            poster_url,
+            rating
+        FROM movies
+        WHERE title LIKE %s
+        ORDER BY id ASC
+        LIMIT %s OFFSET %s
+        """
+        
+        cursor.execute(query, (f"%{keyword}%", size, offset))
+        
+    else:
+        count_query = """
+        SELECT COUNT(*) AS total
+        FROM movies
+        """
+        
+        cursor.execute(count_query)
+        total = cursor.fetchone()["total"]
+        
+        query = """
+        SELECT
+            id,
+            title,
+            genre,
+            director,
+            actors,
+            overview,
+            release_date,
+            poster_url,
+            rating
+        FROM movies
+        ORDER BY id ASC
+        LIMIT %s OFFSET %s
+        """
+        
+        cursor.execute(query, (size, offset))
+        
+    rows = cursor.fetchall()
+    
+    cursor.close()
+    conn.close()
+    
+    total_pages = (total + size - 1) // size
+    
+    return {
+        "movies": rows,
+        "page": page,
+        "size": size,
+        "total": total,
+        "total_pages": total_pages
+    }
+
+def get_movie_detail(movie_id):
     conn = get_connection()
 
     try:
