@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>CineFeel 로그인</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/login.css}">
+</head>
+
+<body>
+
+<div class="login-page">
+
+    <div class="dark-overlay"></div>
+
+    <!-- 로고 -->
+    <a th:href="@{/}" class="logo">
+        Cine<span>Feel</span>
+    </a>
+
+    <!-- 로그인 박스 -->
+    <main class="login-box">
+
+        <h1>로그인</h1>
+
+        <p class="sub-text">
+            리뷰 감성을 분석하고<br>
+            취향에 맞는 영화를 추천받아보세요.
+        </p>
+
+        <!-- ================= 에러 메시지 ================= -->
+        <p th:if="${param.error}"
+           style="color:red; margin-bottom:15px;">
+            이메일 또는 비밀번호가 올바르지 않습니다.
+        </p>
+
+        <!-- ================= 로그아웃 메시지 ================= -->
+        <p th:if="${param.logout}"
+           style="color:green; margin-bottom:15px;">
+            로그아웃 되었습니다.
+        </p>
+
+        <!-- ================= 로그인 폼 ================= -->
+        <form th:action="@{/login}" method="post">
+
+            <!-- 이메일 -->
+            <div class="input-group">
+
+                <label for="email">이메일</label>
+
+                <input type="email"
+                       id="email"
+                       name="email"
+                       placeholder="이메일을 입력하세요"
+                       required />
+            </div>
+
+            <!-- 비밀번호 -->
+            <div class="input-group">
+
+                <label for="password">비밀번호</label>
+
+                <input type="password"
+                       id="password"
+                       name="password"
+                       placeholder="비밀번호를 입력하세요"
+                       required />
+            </div>
+
+            <!-- 로그인 버튼 -->
+            <button type="submit" class="login-btn">
+                로그인
+            </button>
+
+            <!-- 옵션 -->
+            <div class="login-options">
+
+                <label>
+                    <input type="checkbox" />
+                    로그인 상태 유지
+                </label>
+
+                <a href="#">
+                    비밀번호 찾기
+                </a>
+
+            </div>
+
+        </form>
+
+        <!-- 회원가입 -->
+        <p class="signup-text">
+            아직 계정이 없나요?
+            <a th:href="@{/signup}">
+                회원가입
+            </a>
+        </p>
+
+    </main>
+
+</div>
+
+</body>
+</html>

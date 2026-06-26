@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineFeel 회원가입</title>
+
+    <link rel="stylesheet" th:href="@{/css/signup.css}">
+</head>
+
+<body>
+
+<div class="signup-page">
+
+    <div class="dark-overlay"></div>
+
+    <!-- 로고 -->
+    <a th:href="@{/}" class="logo">
+        CineFeel
+    </a>
+
+    <main class="signup-box">
+
+        <h1>회원가입</h1>
+
+        <p class="sub-text">
+            나만의 영화 취향을 분석하고 감성 기반 추천을 받아보세요.
+        </p>
+
+        <!-- ================= 에러 메시지 ================= -->
+        <p th:if="${param.error == 'duplicate'}"
+           style="color:red; margin-bottom:10px;">
+            이미 가입된 이메일입니다.
+        </p>
+
+        <p th:if="${param.error == 'password'}"
+           style="color:red; margin-bottom:10px;">
+            비밀번호가 일치하지 않습니다.
+        </p>
+
+        <!-- ================= 회원가입 폼 ================= -->
+        <form th:action="@{/signup}" method="post">
+
+            <!-- 이름 -->
+            <div class="input-group">
+                <label for="username">이름</label>
+                <input type="text"
+                       id="username"
+                       name="username"
+                       placeholder="이름을 입력하세요"
+                       required>
+            </div>
+
+            <!-- 이메일 -->
+            <div class="input-group">
+                <label for="email">이메일</label>
+                <input type="email"
+                       id="email"
+                       name="email"
+                       placeholder="이메일을 입력하세요"
+                       required>
+            </div>
+
+            <!-- 비밀번호 -->
+            <div class="input-group">
+                <label for="password">비밀번호</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       placeholder="비밀번호를 입력하세요"
+                       required>
+            </div>
+
+            <!-- 비밀번호 확인 -->
+            <div class="input-group">
+                <label for="passwordCheck">비밀번호 확인</label>
+                <input type="password"
+                       id="passwordCheck"
+                       name="passwordCheck"
+                       placeholder="비밀번호를 다시 입력하세요"
+                       required>
+            </div>
+
+            <!-- 선호 장르 -->
+            <p class="genre-title">선호 장르</p>
+
+            <div class="genre-list">
+
+                <label>
+                    <input type="checkbox" name="genres" value="ACTION">
+                    <span>액션</span>
+                </label>
+
+                <label>
+                    <input type="checkbox" name="genres" value="ROMANCE">
+                    <span>로맨스</span>
+                </label>
+
+                <label>
+                    <input type="checkbox" name="genres" value="SF">
+                    <span>SF</span>
+                </label>
+
+                <label>
+                    <input type="checkbox" name="genres" value="THRILLER">
+                    <span>스릴러</span>
+                </label>
+
+                <label>
+                    <input type="checkbox" name="genres" value="COMEDY">
+                    <span>코미디</span>
+                </label>
+
+                <label>
+                    <input type="checkbox" name="genres" value="DRAMA">
+                    <span>드라마</span>
+                </label>
+
+            </div>
+
+            <button type="submit" class="signup-btn">
+                회원가입
+            </button>
+
+        </form>
+
+        <!-- 로그인 이동 -->
+        <p class="login-text">
+            이미 계정이 있나요?
+            <a th:href="@{/login}">로그인</a>
+        </p>
+
+    </main>
+
+</div>
+
+</body>
+</html>

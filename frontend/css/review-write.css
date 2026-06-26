@@ -1,0 +1,319 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background:
+        linear-gradient(
+            rgba(0,0,0,0.82),
+            rgba(0,0,0,0.92)
+        ),
+        url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1974")
+        center / cover fixed;
+
+    color: white;
+
+    font-family: 'Noto Sans KR', sans-serif;
+
+    min-height: 100vh;
+}
+
+/* 상단바 */
+
+.topbar {
+    width: 100%;
+    height: 78px;
+
+    padding: 0 42px;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: rgba(0,0,0,0.72);
+
+    backdrop-filter: blur(14px);
+
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* 로고 */
+
+.logo {
+    font-size: 28px;
+    font-weight: 900;
+
+    color: #ff3355;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+
+/* 메뉴 */
+
+.nav-menu {
+    display: flex;
+    gap: 38px;
+
+    position: absolute;
+
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.nav-menu a {
+    color: #d1d5db;
+
+    text-decoration: none;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    transition: 0.2s;
+
+    cursor: pointer;
+}
+
+.nav-menu a:hover {
+    color: #ffffff;
+}
+
+
+/* 오른쪽 */
+
+.top-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.top-right input {
+    width: 230px;
+    height: 40px;
+
+    padding: 0 14px;
+
+    border-radius: 10px;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    background: rgba(20,20,20,0.95);
+
+    color: white;
+
+    outline: none;
+}
+
+.top-right input::placeholder {
+    color: #6b7280;
+}
+
+.top-right a {
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-weight: 700;
+
+    transition: 0.2s;
+}
+
+.top-right a:hover {
+    color: #ff3355;
+}
+
+/* 전체 영역 */
+
+.review-container {
+    width: 100%;
+    min-height: 100vh;
+
+    padding-top: 120px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 카드 */
+
+.review-card {
+    width: 480px;
+
+    background: rgba(15,15,15,0.94);
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    border-radius: 24px;
+
+    padding: 28px;
+
+    backdrop-filter: blur(10px);
+
+    box-shadow:
+        0 30px 60px rgba(0,0,0,0.45);
+}
+
+/* 영화 정보 */
+
+.movie-info {
+    display: flex;
+    gap: 18px;
+
+    margin-bottom: 24px;
+}
+
+.movie-info img {
+    width: 86px;
+    height: 126px;
+
+    object-fit: cover;
+
+    border-radius: 12px;
+
+    background: #222;
+}
+
+.movie-text h2 {
+    font-size: 18px;
+    font-weight: 800;
+
+    margin-bottom: 10px;
+}
+
+.movie-text p {
+    color: #9ca3af;
+
+    font-size: 14px;
+
+    margin-bottom: 10px;
+}
+
+.movie-rating {
+    color: #facc15;
+
+    font-weight: 700;
+}
+
+/* 구분선 */
+
+.divider {
+    width: 100%;
+    height: 1px;
+
+    background: rgba(255,255,255,0.06);
+
+    margin: 24px 0;
+}
+
+/* 리뷰 */
+
+.review-title {
+    font-size: 28px;
+    font-weight: 800;
+
+    margin-bottom: 10px;
+}
+
+.review-sub {
+    color: #94a3b8;
+
+    font-size: 14px;
+
+    margin-bottom: 18px;
+}
+
+.review-box textarea {
+    width: 100%;
+    height: 170px;
+
+    padding: 18px;
+
+    border-radius: 16px;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    background: rgba(10,10,10,0.9);
+
+    color: white;
+
+    resize: none;
+
+    outline: none;
+
+    font-size: 15px;
+    line-height: 1.6;
+
+    transition: 0.2s;
+}
+
+.review-box textarea:focus {
+    border-color: rgba(225,29,46,0.7);
+
+    box-shadow:
+        0 0 0 4px rgba(225,29,46,0.12);
+}
+
+.review-box textarea::placeholder {
+    color: #6b7280;
+}
+
+/* 안내문 */
+
+.notice {
+    margin-top: 14px;
+
+    color: #94a3b8;
+
+    font-size: 13px;
+}
+
+/* 버튼 */
+
+.analyze-btn {
+    width: 100%;
+    height: 52px;
+
+    margin-top: 20px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background: linear-gradient(
+        135deg,
+        #e11d2e,
+        #b11226
+    );
+
+    color: white;
+
+    font-size: 17px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+.analyze-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 30px rgba(225,29,46,0.35);
+}
+.top-right a,
+.logo,
+.nav-menu a {
+    cursor: pointer;
+}

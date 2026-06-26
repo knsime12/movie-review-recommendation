@@ -1,11 +1,14 @@
 import re
-from common import okt, stopwords_sentiment, stopwords_keyword, movie_keywords
-import numpy as np
+from services.common import okt, stopwords_sentiment, stopwords_keyword, movie_keywords
 import pandas as pd
+import joblib
+from pathlib import Path
 
-# ===== 외부 주입 =====
-tfidf_sentiment = None
-lr_model = None
+BASE_DIR = Path(__file__).resolve().parents[2]
+MODEL_DIR = BASE_DIR / "backend" / "models"
+
+tfidf = joblib.load(MODEL_DIR / "tfidf_sentiment.pkl")
+model = joblib.load(MODEL_DIR / "lr_model.pkl")
 
 # ======================
 # 감정분석 전처리
@@ -94,13 +97,13 @@ def extract_keyword(review, top_n = 7) :
     review_p = preprocess_keyword(review)
 
     # 벡터화
-    vec = tfidf_sentiment.transform([review_p])
+    vec = tfidf.transform([review_p])
 
     # 점수
     scores = vec.toarray()[0]
 
     # 단어 목록
-    features = tfidf_sentiment.get_feature_names_out()
+    features = tfidf.get_feature_names_out()
 
     # 저장
     keywords = []
@@ -135,13 +138,13 @@ def predict_sentiment(review) :
     review_p = preprocess_sentiment(review)
 
     # 벡터화
-    vec = tfidf_sentiment.transform([review_p])
+    vec = tfidf.transform([review_p])
 
     # 예측
-    pred = lr_model.predict(vec)[0]
+    pred = model.predict(vec)[0]
 
     # 긍정확률
-    positive_prob = lr_model.predict_proba(vec)[0][1]
+    positive_prob = model.predict_proba(vec)[0][1]
 
     # 평점
     rating = round(1 + positive_prob * 4, 0)
@@ -153,9 +156,9 @@ def predict_sentiment(review) :
     keywords = extract_keyword(review)
 
     return {
-        "리뷰": review,
-        "감정": sentiment,
-        "긍정확률": positive_prob,
-        "예측평점": rating,
-        "키워드": keywords
+        "review": review,
+        "sentiment": sentiment,
+        "positive_prob": positive_prob,
+        "expected_rating": rating,
+        "keywords": keywords
     }

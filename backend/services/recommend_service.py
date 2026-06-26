@@ -1,15 +1,20 @@
 import numpy as np
 import pandas as pd
-from sklearn.metrics.pairwise import linear_kernel
-from common import okt, stopwords_recommend
-import common
 import re
+import joblib
+from pathlib import Path
+from sklearn.metrics.pairwise import linear_kernel
+import services.common as common
+from services.movie_service import get_movie_by_title
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+MODEL_DIR = BASE_DIR / "backend" / "models"
 
 # ===== 외부주입 ======
-genre_matrix = None
-overview_matrix = None
-actor_matrix = None
-director_matrix = None
+genre_matrix = joblib.load(MODEL_DIR / "genre_matrix.pkl")
+overview_matrix = joblib.load(MODEL_DIR / "overview_matrix.pkl")
+actor_matrix = joblib.load(MODEL_DIR / "actor_matrix.pkl")
+director_matrix = joblib.load(MODEL_DIR / "director_matrix.pkl")
 
 # ======================
 # 전처리
@@ -32,12 +37,12 @@ def preprocess_recommend(text) :
     text = text.strip()
 
     # 형태소분석 - 명사
-    tokens = okt.nouns(text)
+    tokens = common.okt.nouns(text)
 
     # 불용어 제거
     tokens = [
         word for word in tokens
-        if word not in stopwords_recommend and len(word) > 1
+        if word not in common.stopwords_recommend and len(word) > 1
     ]
 
     return ' '.join(tokens)
@@ -64,19 +69,36 @@ def recommend_movies(title, top_n = 5) :
     )
 
     # 추천 영화 정렬 및 자신 제거
-    sim_indices = final_sim.argsort()[::-1][1:top_n+1]
+    sim_indices = final_sim.argsort()[::-1]
 
     # 추천
     recommendations = []
 
-    for i in sim_indices :
+    for i in sim_indices:
+
+        # 자기 자신 제외
+        if i == idx:
+            continue
+        
+        movie = common.movie_df.iloc[i]
+
+        movie_title = movie["영화제목"]
+
+        # DB에서 id만 보조로 찾기
+        db_movie = get_movie_by_title(movie_title)
+
         recommendations.append({
-            "영화제목": common.movie_df.iloc[i]["영화제목"],
-            "장르": common.movie_df.iloc[i]["장르"],
-            "매칭률(%)": round(60 + final_sim[i] * 40, 1)
+            "id": db_movie["id"] if db_movie else None,
+            "title": movie_title,
+            "genre": movie["장르"],
+            "poster_url": movie["포스터이미지"],
+            "match_score": round(60 + final_sim[i] * 40, 1)
         })
 
+        if len(recommendations) >= top_n:
+            break
+
     return {
-        "리뷰작성영화": title,
-        "추천영화목록": recommendations
+        "title": title,
+        "recommendations": recommendations
     }

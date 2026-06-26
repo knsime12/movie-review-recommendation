@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>분석 결과 - CineFeel</title>
+
+    <link rel="stylesheet" href="../css/sentiment-result.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap"
+          rel="stylesheet">
+</head>
+
+<body>
+
+<div class="result-page">
+
+    <header class="navbar">
+        <div class="nav-left">
+            <a href="./index.html" class="logo">Cine<span>Feel</span></a>
+
+            <nav class="nav-menu">
+                <a href="./index.html">홈</a>
+                <a href="./list.html">영화목록</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="result-container">
+
+        <div class="result-title-wrap">
+            <div class="mini-brand">✦ CINEFEEL</div>
+            <h1>분석 결과 <span>& 추천 영화</span></h1>
+        </div>
+
+        <section class="result-card">
+
+            <h2>당신의 리뷰 분석 결과</h2>
+
+            <!-- 작성한 영화 정보 -->
+            <div class="standard-box" style="margin-bottom: 24px;">
+                <h3>리뷰 작성 영화</h3>
+
+                <div class="standard-row">
+                    <span>영화 제목</span>
+                    <strong id="movieTitle">-</strong>
+                </div>
+
+                <div class="standard-row">
+                    <span>장르</span>
+                    <strong id="movieGenre">-</strong>
+                </div>
+
+                <div class="standard-row">
+                    <span>작성 리뷰</span>
+                    <strong id="reviewText">-</strong>
+                </div>
+            </div>
+
+            <div class="result-summary">
+
+                <div class="sentiment-box">
+
+                    <div class="face" id="sentimentFace">
+                        😊
+                    </div>
+
+                    <div class="sentiment-info">
+                        <h3 id="sentimentText">긍정 리뷰</h3>
+                        <p>긍정 확률</p>
+                        <strong><span id="positivePercent">0</span>%</strong>
+                    </div>
+
+                    <div class="progress">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+
+                    <div class="ratio-row">
+                        <span class="positive">● 긍정 <span id="positiveRatio">0</span>%</span>
+                        <span class="negative">● 부정 <span id="negativeRatio">0</span>%</span>
+                    </div>
+
+                </div>
+
+                <div class="standard-box">
+
+                    <h3>분석 기준</h3>
+
+                    <div class="standard-row">
+                        <span>리뷰 감성</span>
+                        <strong id="sentimentLabel">-</strong>
+                    </div>
+
+                    <div class="standard-row">
+                        <span>긍정 비율</span>
+                        <strong><span id="positiveStandard">0</span>%</strong>
+                    </div>
+
+                    <div class="standard-row">
+                        <span>부정 비율</span>
+                        <strong><span id="negativeStandard">0</span>%</strong>
+                    </div>
+
+                    <div class="standard-row">
+                        <span>추천 기준</span>
+                        <strong>유사 영화 추천</strong>
+                    </div>
+
+                    <div class="standard-row">
+                        <span>AI 예상 평점</span>
+                        <strong>⭐ <span id="expectedRating">0.0</span></strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="recommend-section">
+
+                <h2>감성 분석 기반 추천 영화</h2>
+                <p>AI가 리뷰 감정을 기반으로 추천한 영화입니다.</p>
+
+                <div class="recommend-grid" id="recommendGrid">
+                    <!-- JS로 추천 영화 출력 -->
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="../js/result.js"></script>
+</body>
+</html>

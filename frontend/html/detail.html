@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>영화 상세 - CineFeel</title>
+
+    <link rel="stylesheet" href="../css/movie-detail.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap"
+          rel="stylesheet">
+</head>
+
+<body>
+
+<div class="detail-page">
+
+    <!-- ================= TOPBAR ================= -->
+    <header class="navbar">
+
+        <a class="logo" href="./index.html">
+            CineFeel
+        </a>
+
+        <nav>
+            <a href="./index.html">홈</a>
+            <a href="./list.html">영화목록</a>
+            <a href="./mypage.html">마이페이지</a>
+        </nav>
+
+        <div class="nav-icons">
+            <a href="./login.html">로그인</a>
+            <a href="./signup.html">회원가입</a>
+        </div>
+
+    </header>
+
+    <!-- ================= DETAIL ================= -->
+    <main class="detail-card">
+
+        <!-- 포스터 -->
+        <section class="poster-area">
+            <div class="main-poster">
+                <img id="poster" alt="movie poster">
+
+                <div id="posterPlaceholder" class="poster-placeholder">
+                    NO IMAGE
+                </div>
+            </div>
+        </section>
+
+        <!-- 영화 정보 -->
+        <section class="info-area">
+
+            <h1 id="title">영화 제목</h1>
+
+            <div class="rating">
+                <span class="star">★</span>
+                <strong id="rating">0.0</strong>
+                <span>평점</span>
+            </div>
+
+            <div class="tag-list">
+                <span id="genre">장르</span>
+            </div>
+
+            <div class="movie-info">
+
+                <p>
+                    <strong>감독</strong>
+                    <span id="director">정보 없음</span>
+                </p>
+
+                <p>
+                    <strong>배우</strong>
+                    <span id="actors">정보 없음</span>
+                </p>
+
+                <p>
+                    <strong>개봉</strong>
+                    <span id="releaseDate">-</span>
+                </p>
+
+            </div>
+
+            <p class="description" id="overview">
+                영화 설명
+            </p>
+
+            <div class="review-btn-area">
+                <a id="reviewWriteBtn"
+                   href="./review-write.html"
+                   class="write-review-btn">
+                    리뷰 작성하기
+                </a>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ================= REVIEW SECTION ================= -->
+    <section class="review-section">
+
+        <div class="review-title-wrap">
+            <h2>리뷰 목록</h2>
+            <span>0개의 리뷰</span>
+        </div>
+
+        <div class="empty-review">
+            <p>아직 작성된 리뷰가 없습니다.</p>
+        </div>
+
+    </section>
+
+</div>
+
+<script src="../js/detail.js"></script>
+</body>
+</html>

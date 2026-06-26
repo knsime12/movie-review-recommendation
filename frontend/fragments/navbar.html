@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<body>
+
+<header class="navbar"
+        th:fragment="navbar">
+
+    <!-- ================= LEFT ================= -->
+    <div class="nav-left">
+
+        <!-- 로고 -->
+        <a th:href="@{/}"
+           class="logo">
+
+            Cine<span>Feel</span>
+
+        </a>
+
+        <!-- 메뉴 -->
+        <nav class="nav-menu">
+
+            <a th:href="@{/}">
+                홈
+            </a>
+
+            <a th:href="@{/movie/list}">
+                영화목록
+            </a>
+
+            <!-- 로그인 시만 노출 -->
+<!--            <a sec:authorize="isAuthenticated()"-->
+<!--               th:href="@{/movie/list}">-->
+<!--                리뷰작성-->
+<!--            </a>-->
+
+            <!-- 로그인 시만 노출 -->
+            <a sec:authorize="isAuthenticated()"
+               th:href="@{/mypage}">
+                마이페이지
+            </a>
+
+        </nav>
+
+    </div>
+
+    <!-- ================= RIGHT ================= -->
+    <div class="nav-right">
+
+        <!-- 검색 -->
+        <form th:action="@{/movie/list}"
+              method="get"
+              class="search-form">
+
+            <input type="text"
+                   name="keyword"
+                   class="search-input"
+                   placeholder="영화를 검색하세요">
+
+        </form>
+
+        <!-- 로그인 안한 상태 -->
+        <div class="auth-menu"
+             sec:authorize="isAnonymous()">
+
+            <a th:href="@{/login}">
+                로그인
+            </a>
+
+            <a th:href="@{/signup}">
+                회원가입
+            </a>
+
+        </div>
+
+        <!-- 로그인 한 상태 -->
+        <div class="auth-menu"
+             sec:authorize="isAuthenticated()">
+
+            <span class="user-badge">
+                👤
+                <span sec:authentication="name">
+                    USER
+                </span>
+                님
+            </span>
+
+            <a th:href="@{/logout}"
+               class="logout-link">
+                로그아웃
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+</body>
+</html>

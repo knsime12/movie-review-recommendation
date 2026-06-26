@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>마이페이지 - CineFeel</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/mypage.css}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap"
+          rel="stylesheet">
+</head>
+
+<body>
+
+<div class="mypage-wrap">
+
+    <aside class="mypage-sidebar">
+
+        <a th:href="@{/}"
+           class="sidebar-logo">
+
+            CineFeel
+
+        </a>
+
+        <ul class="menu-list">
+
+            <li>
+
+                <button class="menu-btn active"
+                        onclick="showTab(event, 'profile')">
+
+                    <span class="menu-icon">◉</span>
+                    <span>내 정보</span>
+
+                </button>
+
+            </li>
+
+            <li>
+
+                <button class="menu-btn"
+                        onclick="showTab(event, 'writtenReviews')">
+
+                    <span class="menu-icon">✎</span>
+                    <span>작성한 리뷰</span>
+
+                </button>
+
+            </li>
+
+            <li>
+
+                <button class="menu-btn"
+                        onclick="showTab(event, 'recommendedMovies')">
+
+                    <span class="menu-icon">✿</span>
+                    <span>추천 받은 영화</span>
+
+                </button>
+
+            </li>
+
+            <li>
+
+                <button class="menu-btn"
+                        onclick="showTab(event, 'genre')">
+
+                    <span class="menu-icon">◇</span>
+                    <span>선호 장르</span>
+
+                </button>
+
+            </li>
+
+            <li style="margin-top:18px;">
+
+                <a th:href="@{/logout}"
+                   style="text-decoration:none;">
+
+                    <button class="menu-btn"
+                            type="button">
+
+                        <span class="menu-icon">↩</span>
+                        <span>로그아웃</span>
+
+                    </button>
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </aside>
+
+    <main class="mypage-content">
+
+        <section id="profile"
+                 class="content-section active-section">
+
+            <h2>
+                내 정보
+            </h2>
+
+            <div class="profile-card">
+
+                <div class="profile-image">
+
+                    👤
+
+                </div>
+
+                <div class="profile-info">
+
+                    <h3 th:text="${user.username}">
+                        username
+                    </h3>
+
+                    <p th:text="${user.email}">
+                        email
+                    </p>
+
+                    <div class="profile-tags">
+
+                        <span>
+
+                            긍정 리뷰
+                            <strong th:text="${positiveCount}"></strong>개
+
+                        </span>
+
+                        <span>
+
+                            부정 리뷰
+                            <strong th:text="${negativeCount}"></strong>개
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section id="writtenReviews"
+                 class="content-section">
+
+            <h2>
+                작성한 리뷰
+            </h2>
+
+            <p class="section-desc">
+                내가 작성한 리뷰와 감성 분석 결과를 확인할 수 있어요.
+            </p>
+
+            <div class="review-summary-grid">
+
+                <div class="summary-card positive-card">
+
+                    <span>
+                        긍정 리뷰
+                    </span>
+
+                    <strong th:text="${positiveCount} + '개'">
+                        0개
+                    </strong>
+
+                </div>
+
+                <div class="summary-card negative-card">
+
+                    <span>
+                        부정 리뷰
+                    </span>
+
+                    <strong th:text="${negativeCount} + '개'">
+                        0개
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <div th:if="${#lists.isEmpty(reviews)}"
+                 class="my-review-card">
+
+                <p>
+                    아직 작성한 리뷰가 없습니다.
+                </p>
+
+            </div>
+
+            <div th:each="review : ${reviews}"
+                 class="my-review-card">
+
+                <div class="review-top">
+
+                    <div>
+
+                        <div class="review-movie-title"
+                             th:text="${review.movie.title}">
+
+                            영화 제목
+
+                        </div>
+
+                        <span class="review-date"
+                              th:text="${#temporals.format(review.createDate, 'yyyy.MM.dd')}">
+
+                            2026.05.15
+
+                        </span>
+
+                    </div>
+
+                    <strong th:classappend="${review.sentiment == 'POSITIVE'}
+                             ? 'positive-text'
+                             : 'negative-text'">
+
+                        <span th:text="${review.sentiment == 'POSITIVE'}
+                              ? '긍정'
+                              : '부정'">
+
+                        </span>
+
+                    </strong>
+
+                </div>
+
+                <p th:text="${review.content}">
+                    리뷰 내용
+                </p>
+
+                <div class="analysis-row">
+
+                    <span>
+                        AI 예상 평점
+                    </span>
+
+                    <strong>
+
+                        ⭐
+                        <span th:text="${#numbers.formatDecimal(review.predictedRating, 1, 1)}">
+                            4.5
+                        </span>
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section id="recommendedMovies"
+                 class="content-section">
+
+            <h2>
+                추천 받은 영화
+            </h2>
+
+            <p class="section-desc">
+                내가 작성한 리뷰 감성을 기반으로 추천된 영화예요.
+            </p>
+
+            <div th:if="${#lists.isEmpty(recommendations)}"
+                 class="my-review-card">
+
+                <p>
+                    아직 추천된 영화가 없습니다. 리뷰를 작성하면 영화가 추천돼요!
+                </p>
+
+            </div>
+
+            <div class="recommended-grid"
+                 th:if="${!#lists.isEmpty(recommendations)}">
+
+                <div class="recommended-card"
+                     th:each="rec : ${recommendations}">
+
+                    <img th:src="${rec.movie.posterUrl != null ? rec.movie.posterUrl : 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1974'}"
+                         th:alt="${rec.movie.title}">
+
+                    <div class="recommended-info">
+
+                        <span class="based-on"
+                              th:text="${rec.reason != null ? rec.reason : '감성 분석 추천'}">
+                            인터스텔라 기반 추천
+                        </span>
+
+                        <h3 th:text="${rec.movie.title}">
+                            영화 제목
+                        </h3>
+
+                        <p th:text="${rec.movie.genre}">
+                            SF / 스릴러
+                        </p>
+
+                        <div>
+                            <strong>
+                                <div>
+                                    <strong>
+                                        매칭률 <span th:text="${#numbers.formatDecimal(rec.score, 1, 1)} + '%'">91.9%</span>
+                                    </strong>
+                                </div>                            </strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section id="genre"
+                 class="content-section">
+
+            <h2>
+                선호 장르
+            </h2>
+
+            <p class="section-desc">
+                추천에 활용되는 선호 장르예요.
+            </p>
+
+            <div class="genre-card">
+
+                <span th:each="genre : ${user.genres}"
+                      th:text="${genre}">
+
+                    SF
+
+                </span>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+    function showTab(event, tabId) {
+
+        const buttons =
+            document.querySelectorAll(".menu-btn");
+
+        const sections =
+            document.querySelectorAll(".content-section");
+
+        buttons.forEach(button => {
+            button.classList.remove("active");
+        });
+
+        sections.forEach(section => {
+            section.classList.remove("active-section");
+        });
+
+        document.getElementById(tabId)
+            .classList.add("active-section");
+
+        event.currentTarget
+            .classList.add("active");
+    }
+
+</script>
+
+</body>
+</html>

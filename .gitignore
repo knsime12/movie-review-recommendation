@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual Environment
+.venv/
+venv/
+
+# Environment
+.env
+
+# VSCode / IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+hs_err_pid*.log
+
+# OS
+.DS_Store
+Thumbs.db
