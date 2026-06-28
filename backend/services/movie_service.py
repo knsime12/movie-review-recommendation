@@ -86,7 +86,7 @@ def get_movie_detail(movie_id):
     try:
         with conn.cursor() as cursor:
 
-            sql = """
+            query = """
             SELECT
                 id,
                 title,
@@ -100,7 +100,7 @@ def get_movie_detail(movie_id):
             WHERE id=%s
             """
 
-            cursor.execute(sql, (movie_id,))
+            cursor.execute(query, (movie_id,))
 
             return cursor.fetchone()
         
@@ -112,7 +112,7 @@ def get_movie_by_title(title):
 
     try:
         with conn.cursor() as cursor:
-            sql = """
+            query = """
             SELECT
                 id,
                 title,
@@ -127,7 +127,7 @@ def get_movie_by_title(title):
             LIMIT 1
             """
 
-            cursor.execute(sql, (title,))
+            cursor.execute(query, (title,))
             return cursor.fetchone()
         
     finally:

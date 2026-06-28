@@ -1,7 +1,7 @@
 const API_BASE_URL = "";
 
 let currentPage = 1;
-const pageSize = 12;
+const pageSize = 15;
 
 document.addEventListener("DOMContentLoaded", () => {
     loadMovies();
@@ -91,17 +91,22 @@ function renderPagination(totalPages) {
 
     if (currentPage > 1) {
         const prevBtn = document.createElement("button");
-        prevBtn.textContent = "이전";
+        prevBtn.type = "button";
+        prevBtn.className = "page-arrow";
+        prevBtn.innerHTML = "‹";
+
         prevBtn.addEventListener("click", () => {
             currentPage--;
             loadMovies();
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
+
         pagination.appendChild(prevBtn);
     }
 
     for (let page = startPage; page <= endPage; page++) {
         const pageBtn = document.createElement("button");
+        pageBtn.type = "button";
         pageBtn.textContent = page;
 
         if (page === currentPage) {
@@ -119,12 +124,17 @@ function renderPagination(totalPages) {
 
     if (currentPage < totalPages) {
         const nextBtn = document.createElement("button");
-        nextBtn.textContent = "다음";
+        nextBtn.type = "button";
+        nextBtn.className = "page-arrow";
+        nextBtn.innerHTML = "›";
+
         nextBtn.addEventListener("click", () => {
             currentPage++;
             loadMovies();
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
+
         pagination.appendChild(nextBtn);
     }
 }
+3.

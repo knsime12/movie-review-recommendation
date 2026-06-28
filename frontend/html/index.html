@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>CineFeel</title>
     <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/navbar.css?v=1">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 </head>
 
@@ -11,14 +12,16 @@
 <div class="container">
 
     <header class="navbar">
-        <a href="/" class="logo">Cine<span>Feel</span></a>
+        <div class="nav-left">
+            <a href="/html/index.html" class="logo">CineFeel</a>
 
-        <nav>
-            <a href="/">홈</a>
-            <a href="/html/list.html">영화목록</a>
-        </nav>
+            <nav class="nav-menu">
+                <a href="/html/index.html">홈</a>
+                <a href="/html/list.html">영화목록</a>
+            </nav>
+        </div>
 
-        <div class="nav-icons">
+        <div class="nav-right auth-menu">
             <a href="/html/login.html">로그인</a>
             <a href="/html/signup.html">회원가입</a>
         </div>
@@ -66,6 +69,8 @@
 
 </div>
 
+<script src="/js/auth.js?v=1"></script>
 <script src="/js/index.js"></script>
+
 </body>
 </html>

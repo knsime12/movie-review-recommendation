@@ -27,6 +27,7 @@ body {
 }
 
 .dark-overlay {
+  pointer-events: none;
   position: absolute;
   inset: 0;
   background:
@@ -39,7 +40,7 @@ body {
   top: 32px;
   left: 48px;
 
-  z-index: 2;
+  z-index: 11;
 
   text-decoration: none;
     color: #e11d2e;
@@ -68,6 +69,8 @@ body {
   border-radius: 20px;
   backdrop-filter: blur(14px);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75);
+  position: relative;
+  z-index: 10;
 }
 
 .login-box h1 {
@@ -135,6 +138,10 @@ body {
   cursor: pointer;
 
   transition: 0.25s;
+
+  position: relative;
+  z-index: 5;
+
 }
 
 /* 마우스 올렸을 때 */

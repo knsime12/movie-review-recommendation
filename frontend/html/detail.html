@@ -5,6 +5,7 @@
     <title>영화 상세 - CineFeel</title>
 
     <link rel="stylesheet" href="/css/movie-detail.css">
+    <link rel="stylesheet" href="/css/navbar.css?v=2">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 </head>
 
@@ -12,15 +13,16 @@
 <div class="detail-page">
 
     <header class="navbar">
-        <a class="logo" href="/">CineFeel</a>
+        <div class="nav-left">
+            <a href="/html/index.html" class="logo">CineFeel</a>
 
-        <nav>
-            <a href="/">홈</a>
-            <a href="/html/list.html">영화목록</a>
-            <a href="/html/mypage.html">마이페이지</a>
-        </nav>
+            <nav class="nav-menu">
+                <a href="/html/index.html">홈</a>
+                <a href="/html/list.html">영화목록</a>
+            </nav>
+        </div>
 
-        <div class="nav-icons">
+        <div class="nav-right auth-menu">
             <a href="/html/login.html">로그인</a>
             <a href="/html/signup.html">회원가입</a>
         </div>
@@ -89,6 +91,8 @@
 
 </div>
 
+<script src="/js/auth.js?v=2"></script>
 <script src="/js/detail.js"></script>
+
 </body>
 </html>

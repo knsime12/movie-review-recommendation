@@ -13,6 +13,7 @@ from services.movie_service import (
     get_movies,
     get_popular_movies,
 )
+from services.user_service import create_user, login_user
 
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -48,7 +49,17 @@ class ReviewRequest(BaseModel) :
 class RecommendRequest(BaseModel) :
     movie_title: str
     top_n: int = 5
+    
+    
+class SignupRequest(BaseModel):
+    username: str
+    email: str
+    password: str
 
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
 # ======================
 # 페이지 라우팅
@@ -89,3 +100,13 @@ def analyze(request: ReviewRequest) :
 @app.post("/recommend")
 def recommend(request: RecommendRequest) :
     return recommend_movies(request.movie_title, request.top_n)
+
+
+@app.post("/signup")
+def signup(request: SignupRequest):
+    return create_user(request.username, request.email, request.password)
+
+
+@app.post("/login")
+def login(request: LoginRequest):
+    return login_user(request.email, request.password)
