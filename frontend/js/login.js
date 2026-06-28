@@ -1,35 +1,24 @@
-console.log("login.js latest version 100");
-
 const API_BASE_URL = "";
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("login.js loaded");
+    const loginBtn = document.querySelector("#loginSubmitBtn");
 
-    const loginBtn = document.getElementById("loginSubmitBtn");
-
-    if (!loginBtn) {
-        console.error("loginSubmitBtn을 찾지 못했습니다.");
-        return;
+    if (loginBtn) {
+        loginBtn.addEventListener("click", login);
     }
-
-    loginBtn.addEventListener("click", handleLogin);
-    console.log("click event registered");
 });
 
-async function handleLogin(event) {
-    console.log("handleLogin called");
+async function login() {
+    const email = document.querySelector("#email").value.trim();
+    const password = document.querySelector("#password").value.trim();
+    const message = document.querySelector("#loginMessage");
 
-    event.preventDefault();
-
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const messageBox = document.getElementById("loginMessage");
-
-    messageBox.style.display = "none";
-    messageBox.textContent = "";
+    if (message) {
+        message.style.display = "none";
+    }
 
     if (!email || !password) {
-        showLoginMessage("이메일과 비밀번호를 입력해주세요.");
+        alert("이메일과 비밀번호를 입력해주세요.");
         return;
     }
 
@@ -40,8 +29,8 @@ async function handleLogin(event) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                email: email,
-                password: password
+                email,
+                password
             })
         });
 
@@ -49,25 +38,31 @@ async function handleLogin(event) {
 
         console.log("login result:", result);
 
-        if (result.success === true) {
-            sessionStorage.setItem("user", JSON.stringify(result.user));
-
-            alert(result.message || "로그인 성공");
-            window.location.replace("/html/index.html");
+        if (!response.ok || !result.success) {
+            if (message) {
+                message.textContent = result.message;
+                message.style.display = "block";
+            }
             return;
         }
 
-        showLoginMessage(result.message || "로그인에 실패했습니다.");
+        // 로그인 정보 저장
+        sessionStorage.setItem("isLogin", "true");
+        sessionStorage.setItem("isLoggedIn", "true");
+
+        sessionStorage.setItem("userId", String(result.user.id));
+        sessionStorage.setItem("username", result.user.username);
+        sessionStorage.setItem("userName", result.user.username);
+        sessionStorage.setItem("email", result.user.email);
+
+        console.log("userId =", sessionStorage.getItem("userId"));
+
+        alert("로그인되었습니다.");
+
+        location.href = "/html/index.html";
 
     } catch (error) {
-        console.error(error);
-        showLoginMessage("로그인 요청 중 오류가 발생했습니다.");
+        console.error("login error:", error);
+        alert("로그인 중 오류가 발생했습니다.");
     }
-}
-
-function showLoginMessage(message) {
-    const messageBox = document.getElementById("loginMessage");
-
-    messageBox.textContent = message;
-    messageBox.style.display = "block";
 }

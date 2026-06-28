@@ -14,7 +14,7 @@
 
     <aside class="mypage-sidebar">
 
-        <a href="/" class="sidebar-logo">
+        <a href="/html/index.html" class="sidebar-logo">
             CineFeel
         </a>
 
@@ -148,23 +148,7 @@
 
 </div>
 
-<script>
-    function showTab(event, tabId) {
-        const buttons = document.querySelectorAll(".menu-btn");
-        const sections = document.querySelectorAll(".content-section");
-
-        buttons.forEach(button => {
-            button.classList.remove("active");
-        });
-
-        sections.forEach(section => {
-            section.classList.remove("active-section");
-        });
-
-        document.getElementById(tabId).classList.add("active-section");
-        event.currentTarget.classList.add("active");
-    }
-</script>
+<script src="/js/mypage.js?v=1"></script>
 
 </body>
 </html>

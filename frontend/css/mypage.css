@@ -454,3 +454,120 @@ body {
     font-weight: 900;
     margin-bottom: 8px;
 }
+
+/* =========================
+   작성한 리뷰 목록 수정
+========================= */
+
+/* ==========================
+   내가 작성한 리뷰 카드
+========================== */
+
+#myReviewList.my-review-card{
+    max-width:760px;
+    padding:0;
+    background:none;
+    border:none;
+}
+
+.my-review-item{
+    background:#121212;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:20px;
+    padding:22px;
+    margin-bottom:18px;
+}
+
+.my-review-item .review-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+
+    margin-bottom:14px;
+}
+
+.my-review-item .review-title-area{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.my-review-item .review-movie-title{
+    color:#ffffff;
+    text-decoration:none;
+    font-size:20px;
+    font-weight:900;
+}
+
+.my-review-item .review-movie-title:hover{
+    color:#e11d2e;
+}
+
+.my-review-item .review-genre{
+    color:#9ca3af;
+    font-size:14px;
+}
+
+.my-review-item .positive-text{
+    color:#22c55e;
+    font-weight:800;
+}
+
+.my-review-item .negative-text{
+    color:#ef4444;
+    font-weight:800;
+}
+
+.my-review-item .review-body{
+    display:flex;
+    gap:18px;
+}
+
+.my-review-item .review-poster{
+    width:110px;
+    height:156px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+
+    flex-shrink:0;
+}
+
+.my-review-item .review-content-wrap{
+    flex:1;
+
+    display:flex;
+    flex-direction:column;
+}
+
+.my-review-item .review-content{
+    color:#f5f5f5;
+    font-size:18px;
+    font-weight:700;
+
+    margin-bottom:20px;
+}
+
+.my-review-item .review-bottom{
+
+    margin-top:auto;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    border-top:1px dashed rgba(255,255,255,.12);
+
+    padding-top:14px;
+}
+
+.review-rating{
+    color:#f5c542;
+    font-weight:800;
+}
+
+.review-date{
+    color:#8a8a8a;
+    font-size:13px;
+}

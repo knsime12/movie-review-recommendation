@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from typing import Optional
 from pydantic import BaseModel
 
 from services.sentiment_service import predict_sentiment
@@ -14,6 +15,7 @@ from services.movie_service import (
     get_popular_movies,
 )
 from services.user_service import create_user, login_user
+from services.review_service import create_review, get_reviews_by_user
 
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -43,7 +45,7 @@ app.mount("/html", StaticFiles(directory=FRONTEND_DIR / "html"), name="html")
 # 요청 모델
 # ======================
 class ReviewRequest(BaseModel) :
-    review: str
+    content: str
 
 
 class RecommendRequest(BaseModel) :
@@ -60,6 +62,15 @@ class SignupRequest(BaseModel):
 class LoginRequest(BaseModel):
     email: str
     password: str
+    
+class ReviewSaveRequest(BaseModel):
+    user_id: Optional[int] = None
+    movie_id: int
+    content: str
+    sentiment: str
+    positive_prob: Optional[float] = None
+    expected_rating: Optional[float] = None
+    
 
 # ======================
 # 페이지 라우팅
@@ -79,34 +90,63 @@ def api_home():
 
 @app.get("/movies")
 def movies(keyword: str = "", page: int = 1, size: int = 12):
-    return get_movies(keyword=keyword, page=page, size=size)
+    return get_movies(
+        keyword=keyword, 
+        page=page,
+        size=size
+    )
 
 
 @app.get("/movies/popular")
 def popular_movies(limit: int = 6):
-    return get_popular_movies(limit)
+    return get_popular_movies(limit=limit)
 
 
 @app.get("/movies/{movie_id}")
 def movie_detail(movie_id: int):
-    return get_movie_detail(movie_id)
+    return get_movie_detail(movie_id=movie_id)
 
 
 @app.post("/analyze")
 def analyze(request: ReviewRequest) :
-    return predict_sentiment(request.review)
+    return predict_sentiment(review=request.content)
 
 
 @app.post("/recommend")
 def recommend(request: RecommendRequest) :
-    return recommend_movies(request.movie_title, request.top_n)
+    return recommend_movies(
+        title=request.movie_title,
+        top_n=request.top_n
+    )
 
 
 @app.post("/signup")
 def signup(request: SignupRequest):
-    return create_user(request.username, request.email, request.password)
+    return create_user(
+        username=request.username,
+        email=request.email, 
+        password=request.password    
+    )
 
 
 @app.post("/login")
 def login(request: LoginRequest):
-    return login_user(request.email, request.password)
+    return login_user(
+        email=request.email,
+        password=request.password
+    )
+
+@app.post("/reviews")
+def save_review(request: ReviewSaveRequest):
+    return create_review(
+        user_id=request.user_id,
+        movie_id=request.movie_id,
+        content=request.content,
+        sentiment=request.sentiment,
+        positive_prob=request.positive_prob,
+        expected_rating=request.expected_rating
+    )
+    
+@app.get("/users/{user_id}/reviews")
+def user_reviews(user_id: int):
+    return get_reviews_by_user(user_id=user_id)
