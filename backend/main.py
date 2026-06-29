@@ -15,7 +15,13 @@ from services.movie_service import (
     get_popular_movies,
 )
 from services.user_service import create_user, login_user
-from services.review_service import create_review, get_reviews_by_user
+from services.review_service import (
+    create_review,
+    get_reviews_by_user,
+    create_recommendation_history,
+    get_recommendations_by_user,
+    delete_review
+)
 
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -70,7 +76,18 @@ class ReviewSaveRequest(BaseModel):
     sentiment: str
     positive_prob: Optional[float] = None
     expected_rating: Optional[float] = None
+    keywords: Optional[list[str]] = None
     
+
+class RecommendationHistoryRequest(BaseModel):
+    user_id: int
+    base_movie_id: int
+    recommended_movie_id: int
+    similarity: float
+
+
+class ReviewDeleteRequest(BaseModel):
+    user_id: int
 
 # ======================
 # 페이지 라우팅
@@ -144,9 +161,31 @@ def save_review(request: ReviewSaveRequest):
         content=request.content,
         sentiment=request.sentiment,
         positive_prob=request.positive_prob,
-        expected_rating=request.expected_rating
+        expected_rating=request.expected_rating,
+        keywords=request.keywords
     )
     
 @app.get("/users/{user_id}/reviews")
 def user_reviews(user_id: int):
     return get_reviews_by_user(user_id=user_id)
+
+@app.get("/users/{user_id}/recommendations")
+def user_recommendations(user_id: int):
+    return get_recommendations_by_user(user_id=user_id)
+
+
+@app.post("/recommendation-history")
+def save_recommendation_history(request: RecommendationHistoryRequest):
+    return create_recommendation_history(
+        user_id=request.user_id,
+        base_movie_id=request.base_movie_id,
+        recommended_movie_id=request.recommended_movie_id,
+        similarity=request.similarity
+    )
+
+@app.delete("/reviews/{review_id}")
+def delete_review_api(review_id: int, request: ReviewDeleteRequest):
+    return delete_review(
+        review_id=review_id,
+        user_id=request.user_id
+    )

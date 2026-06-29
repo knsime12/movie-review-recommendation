@@ -87,8 +87,11 @@ def recommend_movies(title, top_n = 5) :
         # DB에서 id만 보조로 찾기
         db_movie = get_movie_by_title(movie_title)
 
+        if not db_movie:
+            continue
+
         recommendations.append({
-            "id": db_movie["id"] if db_movie else None,
+            "id": int(db_movie["id"]),
             "title": movie_title,
             "genre": movie["장르"],
             "poster_url": movie["포스터이미지"],

@@ -614,3 +614,30 @@ sentiment-info p {
         font-size: 34px;
     }
 }
+
+.keyword-row {
+    align-items: flex-start;
+}
+
+.keyword-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    max-width: 260px;
+}
+
+.keyword-list span {
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: rgba(229, 29, 46, 0.12);
+    color: #ff4d6d;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.empty-keyword {
+    color: #888 !important;
+    background: transparent !important;
+    padding: 0 !important;
+}

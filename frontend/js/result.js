@@ -6,6 +6,61 @@ document.addEventListener("DOMContentLoaded", () => {
     loadResult();
 });
 
+async function saveRecommendationHistory(baseMovieId, recommendations) {
+    const userId = Number(sessionStorage.getItem("userId"));
+
+    if (!userId || recommendations.length === 0) {
+        return;
+    }
+
+    for (const movie of recommendations) {
+        const recommendedMovieId = movie.id || movie.movie_id;
+
+        if (!recommendedMovieId) {
+            console.warn("recommended movie id 없음:", movie);
+            continue;
+        }
+
+        const similarity = 
+            movie.match_rate ||
+            movie.match_score || 
+            movie.similarity ||
+            movie["매칭률(%)"] || 
+            0;
+
+        const payload = {
+            user_id: userId,
+            base_movie_id: Number(baseMovieId),
+            recommended_movie_id: Number(recommendedMovieId),
+            similarity: Number(similarity)
+        };
+
+        console.log("recommendation payload =", JSON.stringify(payload, null, 2));
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/recommendation-history`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json().catch(() => null);
+
+            console.log("recommendation history status =", JSON.stringify(result, null, 2));
+            console.log("recommendation history save result =", result);
+
+            if (!response.ok || result?.success === false) {
+                console.warn("추천 이력 저장 실패:", result);
+            }
+
+        } catch (error) {
+            console.warn("추천 이력 저장 요청 실패:", error);
+        }
+    }
+}
+
 async function loadResult() {
     const review = sessionStorage.getItem("review");
     const movieId =
@@ -77,6 +132,8 @@ async function loadResult() {
 
         renderRecommendations(recommendResult.recommendations || []);
 
+        await saveRecommendationHistory(movieId, recommendResult.recommendations || []);
+
     } catch (error) {
         console.error("result.js error:", error);
         alert("결과 페이지 처리 중 오류가 발생했습니다.");
@@ -129,6 +186,8 @@ function renderSentimentResult(result) {
 
     setText("#expectedRating", rating);
 
+    renderResultKeywords(result.keywords || []);
+
     const face = document.querySelector("#sentimentFace");
     if (face) {
         face.classList.remove("positive-face", "negative-face");
@@ -168,7 +227,8 @@ async function saveReview(movieId, review, result) {
                 content: review,
                 sentiment: result.sentiment,
                 positive_prob: result.positive_prob,
-                expected_rating: result.expected_rating
+                expected_rating: result.expected_rating,
+                keywords: result.keywords || []
             })
         });
 
@@ -203,7 +263,13 @@ function renderRecommendations(recommendations) {
     recommendations.forEach(movie => {
         const title = movie.title || movie.영화제목;
         const genre = movie.genre || movie.장르 || "장르 정보 없음";
-        const matchRate = movie.match_rate || movie["매칭률(%)"] || 0;
+        const matchRate = 
+            movie.match_rate || 
+            movie.match_score ||
+            movie.similarity ||
+            movie["매칭률(%)"] || 
+            0;
+
         const movieId = movie.id || movie.movie_id;
 
         const card = document.createElement("a");
@@ -236,4 +302,25 @@ function setText(selector, value) {
     if (element) {
         element.textContent = value;
     }
+}
+
+function renderResultKeywords(keywords) {
+    const keywordList = document.querySelector("#resultKeywordList");
+
+    if (!keywordList) {
+        return;
+    }
+
+    keywordList.innerHTML = "";
+
+    if (!Array.isArray(keywords) || keywords.length === 0) {
+        keywordList.innerHTML = `<span class="empty-keyword">키워드 없음</span>`;
+        return;
+    }
+
+    keywords.forEach(keyword => {
+        const span = document.createElement("span");
+        span.textContent = keyword;
+        keywordList.appendChild(span);
+    });
 }

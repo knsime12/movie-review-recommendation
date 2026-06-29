@@ -19,6 +19,7 @@ async function loadMyPage() {
 
     renderUserInfo(username, email);
     await loadMyReviews(userId);
+    await loadMyRecommendations(userId);
 }
 
 function renderUserInfo(username, email) {
@@ -72,6 +73,7 @@ function renderReviewCounts(reviews) {
 }
 
 function renderMyReviews(reviews) {
+
     const myReviewList = document.querySelector("#myReviewList");
 
     if (!myReviewList) {
@@ -88,6 +90,27 @@ function renderMyReviews(reviews) {
     }
 
     reviews.forEach(review => {
+        let keywordHtml = "";
+
+        try {
+            let keywords = review.keywords || [];
+
+            if (typeof keywords === "string") {
+                keywords = JSON.parse(keywords);
+            }
+
+            if (Array.isArray(keywords) && keywords.length > 0) {
+                keywordHtml = `
+                    <div class="keyword-list">
+                        ${keywords.map(keyword => `<span>${keyword}</span>`).join("")}
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.warn("keywords parse error:", review.keywords);
+            keywordHtml = "";
+        }
+        
         const reviewCard = document.createElement("div");
         reviewCard.className = "my-review-item";
 
@@ -127,6 +150,8 @@ function renderMyReviews(reviews) {
                         ${review.content || ""}
                     </p>
 
+                    ${keywordHtml}
+
                     <div class="review-bottom">
                         <span class="review-rating">
                             ⭐ AI 예상 평점 ${review.expected_rating || "-"}
@@ -137,6 +162,10 @@ function renderMyReviews(reviews) {
                         </span>
                     </div>
 
+                    <button class="delete-review-btn" onclick="deleteReview(${review.review_id})">
+                        삭제
+                    </button>
+
                 </div>
 
             </div>
@@ -144,6 +173,140 @@ function renderMyReviews(reviews) {
 
         myReviewList.appendChild(reviewCard);
     });
+}
+
+async function loadMyRecommendations(userId) {
+    const myRecommendList = document.querySelector("#myRecommendList");
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/users/${userId}/recommendations`);
+
+        if (!response.ok) {
+            throw new Error("추천받은 영화 조회 실패")
+        }
+
+        const result = await response.json();
+
+        console.log("my recommendations result =", result);
+
+        if (!result.success) {
+            throw new Error(result.message || "추천받은 영화 조회 실패");
+        }
+
+        const recommendations = result.recommendations || [];
+
+        renderMyRecommendations(recommendations);
+
+    } catch (error) {
+        console.error("recommendation mypage error:", error);
+
+        if (myRecommendList) {
+            myRecommendList.innerHTML = `
+                <p>추천받은 영화를 불러오는 중 오류가 발생했습니다.</p>
+            `;
+        }
+    }
+}
+
+function renderMyRecommendations(recommendations) {
+    const myRecommendList = document.querySelector("#myRecommendList");
+
+    if (!myRecommendList) {
+        return;
+    }
+
+    myRecommendList.innerHTML = "";
+
+    if (recommendations.length === 0) {
+        myRecommendList.innerHTML = `
+            <p>아직 추천된 영화가 없습니다. 리뷰를 작성하면 영화가 추천됩니다.</p>
+        `;
+        return;
+    }
+
+    myRecommendList.className = "recommended-grid";
+
+    recommendations.forEach(rec => {
+        const card = document.createElement("a");
+        card.className = "recommended-card";
+        card.href = `/html/detail.html?id=${rec.recommended_movie_id || rec.movie_id || rec.id}`;
+
+        const title = rec.title || "영화 제목";
+        const genre = rec.genre || "장르 정보 없음";
+        const posterUrl = rec.poster_url || NO_IMAGE_URL;
+
+        const matchRate = 
+            rec.similarity ||
+            rec.match_rate ||
+            rec.match_score ||
+            0;
+
+        card.innerHTML = `
+            <img src="${posterUrl}"
+                alt="추천 영화 포스터"
+                onerror="this.src='${NO_IMAGE_URL}'">
+
+            <div class="recommended-info">
+                <span class="based-on">추천 이력</span>
+
+                <h3>${title}</h3>
+
+                <p>${genre}</p>
+
+                <strong>
+                    🔥 매칭률 ${matchRate}%
+                </strong>
+            </div>
+        `;
+
+        myRecommendList.appendChild(card);
+    });
+}
+
+async function deleteReview(reviewId) {
+    const userId = Number(sessionStorage.getItem("userId"));
+
+    if (!userId) {
+        alert("로그인이 필요합니다.");
+        location.href = "/html/login.html";
+        return;
+    }
+
+    const confirmed = confirm("리뷰를 삭제하시겠습니까? 추천 이력도 함께 삭제됩니다.");
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                user_id: userId
+            })
+        });
+
+        const result = await response.json();
+
+        console.log("delete review result=", result);
+
+        if(!response.ok || !result.success) {
+            alert(result.message || "리뷰 삭제 실패");
+            return;
+        }
+
+        alert("리뷰가 삭제되었습니다.");
+
+        await loadMyReviews(userId);
+        await loadMyRecommendations(userId);
+
+    } catch(error) {
+        console.error("delete review error:", error);
+        alert("리뷰 삭제 중 오류가 발생했습니다.");
+    }
 }
 
 function showTab(event, tabId) {
