@@ -6,6 +6,60 @@ def create_review(user_id, movie_id, content, sentiment, positive_prob, expected
     cursor = conn.cursor()
     
     try:
+        # ======================
+        # 예외 처리
+        # ======================
+        if not user_id:
+            return {
+                "success": False,
+                "message": "로그인이 필요합니다."
+            }
+        
+        if not movie_id:
+            return {
+                "success": False,
+                "message": "영화 정보가 없습니다."
+            }
+        
+        if not content or not content.strip():
+            return {
+                "success": False,
+                "message": "리뷰 내용을 입력해주세요."
+            }
+        
+        if len(content.strip()) < 5:
+            return {
+                "success": False,
+                "message": "리뷰는 5자 이상 작성해주세요."
+            }
+        
+        if len(content.strip()) > 500:
+            return {
+                "success": False,
+                "message": "리뷰는 500자 이하로 작성해주세요."
+            }
+        
+        # ======================
+        # 리뷰 중복 작성 방지
+        # ======================
+        check_query = """
+        SELECT id
+        FROM reviews
+        WHERE user_id = %s AND movie_id = %s
+        """
+
+        cursor.execute(check_query, (user_id, movie_id))
+        existing_review = cursor.fetchone()
+
+        if existing_review:
+            return {
+                "success": False,
+                "message": "이미 이 영화에 리뷰를 작성했습니다."
+            }
+
+        # ======================
+        # 리뷰 저장
+        # ======================
         keyword_text = json.dumps(keywords or [], ensure_ascii = False)
 
         query = """
@@ -93,6 +147,54 @@ def create_recommendation_history(user_id, base_movie_id, recommended_movie_id, 
     cursor = conn.cursor()
 
     try:
+        # ======================
+        # 예외 처리
+        # ======================
+        if not user_id:
+            return {
+                "success": False,
+                "message": "로그인이 필요합니다."
+            }
+        
+        if not base_movie_id or not recommended_movie_id:
+            return {
+                "success": False,
+                "message": "추천 영화 정보가 없습니다."
+            }
+        
+        if base_movie_id == recommended_movie_id:
+            return {
+                "success": False,
+                "message": "같은 영화는 추천 이력에 저장할 수 없습니다."
+            }
+        
+        # ======================
+        # 추천 이력 중복 저장 방지
+        # ======================
+        check_query = """
+        SELECT id
+        FROM recommendation_history
+        WHERE user_id = %s
+            AND base_movie_id = %s
+            AND recommended_movie_id = %s
+        """
+
+        cursor.execute(
+            check_query, (user_id, base_movie_id, recommended_movie_id)
+        )
+
+        existing_history = cursor.fetchone()
+
+        if existing_history:
+            return {
+                "success": False,
+                "message": "이미 추천된 영화입니다.",
+                "duplicated": True
+            }
+        
+        # ======================
+        # 추천 이력 저장
+        # ======================
         query = """
         INSERT INTO recommendation_history
         (user_id, base_movie_id, recommended_movie_id, similarity)
@@ -223,6 +325,39 @@ def delete_review(review_id, user_id):
             "error": str(e)
         }
     
+    finally:
+        cursor.close()
+        conn.close()
+
+def check_review_exists(user_id, movie_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        query = """
+        SELECT id
+        FROM reviews
+        WHERE user_id = %s AND movie_id = %s
+        """
+
+        cursor.execute(query, (user_id, movie_id))
+        review = cursor.fetchone()
+
+        return {
+            "success": True,
+            "exists": review is not None,
+            "message": "이미 작성한 리뷰가 있습니다." if review else "작성 가능한 영화입니다."
+        }
+    
+    except Exception as e:
+        print("리뷰 중복 확인 오류:", e)
+
+        return {
+            "success": False,
+            "exists": False,
+            "message": "리뷰 중복 확인 중 오류가 발생했습니다.",
+            "error": str(e)
+        }
     finally:
         cursor.close()
         conn.close()

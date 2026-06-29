@@ -1,12 +1,29 @@
 const API_BASE_URL = "";
 
 document.addEventListener("DOMContentLoaded", () => {
+    checkLogin();
     loadMovieInfo();
 
     const reviewForm = document.getElementById("reviewForm");
 
     reviewForm.addEventListener("submit", async (event) => {
         event.preventDefault();
+
+        const userId = Number(sessionStorage.getItem("userId"));
+        const params = new URLSearchParams(window.location.search);
+        const movieId = params.get("id");
+
+        if (!userId) {
+            alert("로그인이 필요합니다.");
+            location.href = "/html/login.html";
+            return;
+        }
+
+        if (!movieId) {
+            alert("영화 정보가 없습니다.");
+            location.href = "/html/list.html";
+            return;
+        }
 
         const review = document.getElementById("reviewContent").value.trim();
 
@@ -15,22 +32,68 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const params = new URLSearchParams(window.location.search);
-        const movieId = params.get("id");
+        if (review.length < 5) {
+            alert("리뷰는 5자 이상 작성해주세요.");
+            return;
+        }
 
-        sessionStorage.setItem("review", review);
-        sessionStorage.setItem("movieId", movieId);
+        if (review.length > 500) {
+            alert("리뷰는 500자 이하로 작성해주세요");
+            return;
+        }
 
-        location.href = `/html/result.html?id=${movieId}`;
+        try {
+            const duplicated = await checkDuplicateReview(userId, movieId);
+
+            if (duplicated) {
+                alert("이미 이 영화에 리뷰를 작성했습니다.");
+                location.href = `/html/detail.html?id=${movieId}`;
+                return;
+            }
+
+            sessionStorage.setItem("review", review);
+            sessionStorage.setItem("movieId", movieId);
+
+            location.href = `/html/result.html?id=${movieId}`;
+
+        } catch (error) {
+            console.error("review submit error:", error);
+            alert("리뷰 작성 처리 중 오류가 발생했습니다.");
+        }
     });
 });
 
+function checkLogin() {
+    const userId = sessionStorage.getItem("userId");
+
+    if (!userId) {
+        alert("로그인이 필요합니다.");
+        location.href = "/html/login.html";
+    }
+}
+
+async function checkDuplicateReview(userId, movieId) {
+    const response = await fetch(
+        `${API_BASE_URL}/reviews/check?user_id=${userId}&movie_id=${movieId}`
+    );
+
+    const result = await response.json();
+
+    console.log("review duplicate check result =", result);
+
+    if (!response.ok || !result.success) {
+        throw new Error(result.message || "리뷰 중복 확인 실패");
+    }
+
+    return result.exists;
+}
+
 async function loadMovieInfo() {
     const params = new URLSearchParams(window.location.search);
-    const movieId = params.get("id");
+    const movieId = params.get("id")
 
     if (!movieId) {
-        alert("영화 ID가 없습니다.");
+        alert("영화 ID가 없습니다.")
         location.href = "/html/list.html";
         return;
     }
@@ -44,7 +107,7 @@ async function loadMovieInfo() {
 
         const movie = await response.json();
 
-        const posterUrl = movie.poster_url || movie.posterUrl || "";
+        const posterUrl = movie.poster_url || movie.posetUrl || "";
         const title = movie.title || "영화 정보를 불러오지 못했습니다.";
         const genre = movie.genre || "장르 없음";
         const releaseDate = movie.release_date || movie.releaseDate || "개봉일";

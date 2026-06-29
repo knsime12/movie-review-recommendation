@@ -20,7 +20,8 @@ from services.review_service import (
     get_reviews_by_user,
     create_recommendation_history,
     get_recommendations_by_user,
-    delete_review
+    delete_review,
+    check_review_exists
 )
 
 
@@ -188,4 +189,11 @@ def delete_review_api(review_id: int, request: ReviewDeleteRequest):
     return delete_review(
         review_id=review_id,
         user_id=request.user_id
+    )
+
+@app.get("/reviews/check")
+def check_review(user_id: int, movie_id: int):
+    return check_review_exists(
+        user_id=user_id,
+        movie_id=movie_id
     )

@@ -52,6 +52,14 @@ def preprocess_recommend(text) :
 # ======================
 def recommend_movies(title, top_n = 5) :
 
+    if title not in common.movie_index:
+        return {
+            "succes": False,
+            "message": "기준 영화를 찾을 수 없습니다.",
+            "title": title,
+            "recommendations": []
+        }
+
     idx = common.movie_index[title]
 
     #  유사도
@@ -73,6 +81,8 @@ def recommend_movies(title, top_n = 5) :
 
     # 추천
     recommendations = []
+    recommended_ids = set()
+    recommended_titles = set()
 
     for i in sim_indices:
 
@@ -84,24 +94,39 @@ def recommend_movies(title, top_n = 5) :
 
         movie_title = movie["영화제목"]
 
+        if movie_title == title:
+            continue
+
+        if movie_title in recommended_titles:
+            continue
+
         # DB에서 id만 보조로 찾기
         db_movie = get_movie_by_title(movie_title)
 
         if not db_movie:
             continue
 
+        movie_id = int(db_movie["id"])
+
+        if movie_id in recommended_ids:
+            continue
+
         recommendations.append({
-            "id": int(db_movie["id"]),
+            "id": movie_id,
             "title": movie_title,
             "genre": movie["장르"],
             "poster_url": movie["포스터이미지"],
             "match_score": round(60 + final_sim[i] * 40, 1)
         })
 
+        recommended_ids.add(movie_id)
+        recommended_titles.add(movie_title)
+
         if len(recommendations) >= top_n:
             break
 
     return {
+        "success": True,
         "title": title,
         "recommendations": recommendations
     }

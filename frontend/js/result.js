@@ -239,7 +239,9 @@ async function saveReview(movieId, review, result) {
         console.log("review save error =", saveResult?.error);
 
         if (!response.ok || saveResult?.success === false) {
+            alert(saveResult?.message || "리뷰 저장 실패");
             console.warn("리뷰 저장 실패:", saveResult);
+            location.href = `/html/detail.html?id=${movieId}`;
             return;
         }
 
