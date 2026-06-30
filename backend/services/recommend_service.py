@@ -4,8 +4,13 @@ import re
 import joblib
 from pathlib import Path
 from sklearn.metrics.pairwise import linear_kernel
-import services.common as common
+
 from services.movie_service import get_movie_by_title
+
+from nlp.tokenizer import okt
+from nlp.stopwords import stopwords_recommend
+
+from data.movie_loader import movie_df, movie_index
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 MODEL_DIR = BASE_DIR / "backend" / "models"
@@ -37,12 +42,12 @@ def preprocess_recommend(text) :
     text = text.strip()
 
     # 형태소분석 - 명사
-    tokens = common.okt.nouns(text)
+    tokens = okt.nouns(text)
 
     # 불용어 제거
     tokens = [
         word for word in tokens
-        if word not in common.stopwords_recommend and len(word) > 1
+        if word not in stopwords_recommend and len(word) > 1
     ]
 
     return ' '.join(tokens)
@@ -52,7 +57,7 @@ def preprocess_recommend(text) :
 # ======================
 def recommend_movies(title, top_n = 5) :
 
-    if title not in common.movie_index:
+    if title not in movie_index:
         return {
             "succes": False,
             "message": "기준 영화를 찾을 수 없습니다.",
@@ -60,7 +65,7 @@ def recommend_movies(title, top_n = 5) :
             "recommendations": []
         }
 
-    idx = common.movie_index[title]
+    idx = movie_index[title]
 
     #  유사도
     genre_sim = linear_kernel(genre_matrix[idx], genre_matrix).flatten()
@@ -90,7 +95,7 @@ def recommend_movies(title, top_n = 5) :
         if i == idx:
             continue
         
-        movie = common.movie_df.iloc[i]
+        movie = movie_df.iloc[i]
 
         movie_title = movie["영화제목"]
 
