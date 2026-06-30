@@ -1,4 +1,3 @@
-import joblib
 import numpy as np
 from pathlib import Path
 from sklearn.metrics.pairwise import linear_kernel
@@ -6,6 +5,13 @@ from sklearn.metrics.pairwise import linear_kernel
 import services.common as common
 
 from services.movie_service import get_movie_by_title
+
+from core.model_loader import (
+    genre_matrix,
+    overview_matrix,
+    actor_matrix,
+    director_matrix
+)
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 MODEL_DIR = BASE_DIR / "backend" / "models"
@@ -20,12 +26,6 @@ ACTOR_SCALE = 10
 
 MATCH_SCORE_BASE = 60
 MATCH_SCORE_RANGE = 40
-
-# ===== 외부주입 ======
-genre_matrix = joblib.load(MODEL_DIR / "genre_matrix.pkl")
-overview_matrix = joblib.load(MODEL_DIR / "overview_matrix.pkl")
-actor_matrix = joblib.load(MODEL_DIR / "actor_matrix.pkl")
-director_matrix = joblib.load(MODEL_DIR / "director_matrix.pkl")
 
 
 # ======================

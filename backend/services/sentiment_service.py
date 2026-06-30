@@ -1,16 +1,9 @@
-import joblib
-
-from pathlib import Path
-
 from services.keyword_service import extract_keywords
 
 from utils.text_preprocessor import preprocess_sentiment
 
-BASE_DIR = Path(__file__).resolve().parents[2]
-MODEL_DIR = BASE_DIR / "backend" / "models"
+from core.model_loader import tfidf_sentiment, sentiment_model
 
-tfidf = joblib.load(MODEL_DIR / "tfidf_sentiment.pkl")
-model = joblib.load(MODEL_DIR / "lr_model.pkl")
 
 POSITIVE_LABEL = 1
 POSITIVE_TEXT = "긍정"
@@ -29,13 +22,13 @@ def predict_sentiment(review) :
     review_p = preprocess_sentiment(review)
 
     # 벡터화
-    vec = tfidf.transform([review_p])
+    vec = tfidf_sentiment.transform([review_p])
 
     # 예측
-    pred = model.predict(vec)[0]
+    pred = sentiment_model.predict(vec)[0]
 
     # 긍정확률
-    positive_prob = model.predict_proba(vec)[0][1]
+    positive_prob = sentiment_model.predict_proba(vec)[0][1]
 
     # 평점
     rating = round(
