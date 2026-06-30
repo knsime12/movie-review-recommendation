@@ -130,3 +130,21 @@ def get_recommendations_by_user(user_id):
     finally:
         cursor.close()
         conn.close()
+
+# 추천 이력 삭제
+def delete_recommendation_histories(user_id, base_movie_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        query = """
+        DELETE FROM recommendation_history
+        WHERE user_id = %s AND base_movie_id = %s
+        """
+
+        cursor.execute(query, (user_id, base_movie_id))
+        conn.commit()
+
+    finally:
+        cursor.close()
+        conn.close()

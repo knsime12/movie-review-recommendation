@@ -1,6 +1,8 @@
 from database import get_connection
 import json
 
+from services.recommendation_history_service import delete_recommendation_histories
+
 # 리뷰 작성
 def create_review(user_id, movie_id, content, sentiment, positive_prob, expected_rating, keywords=None):
     conn = get_connection()
@@ -144,7 +146,7 @@ def get_reviews_by_user(user_id):
         conn.close()
 
 
-# 리뷰 삭제
+# 리뷰 삭제(추천이력 포함)
 def delete_review(review_id, user_id):
     conn = get_connection()
     cursor = conn.cursor()
@@ -168,12 +170,7 @@ def delete_review(review_id, user_id):
         
         movie_id = review["movie_id"]
 
-        query = """
-        DELETE FROM recommendation_history
-        WHERE user_id = %s AND base_movie_id = %s
-        """
-
-        cursor.execute(query, (user_id, movie_id))
+        delete_recommendation_histories(user_id, movie_id)
 
         query = """
         DELETE FROM reviews
