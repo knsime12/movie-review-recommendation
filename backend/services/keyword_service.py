@@ -1,4 +1,5 @@
-from services.common import stopwords_keyword, movie_keywords
+from nlp.stopwords import stopwords_keyword
+from nlp.keyword_dictionary import movie_keywords
 
 from utils.text_preprocessor import preprocess_keyword
 
