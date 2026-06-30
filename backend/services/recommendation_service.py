@@ -1,10 +1,10 @@
-import numpy as np
-import pandas as pd
-import re
 import joblib
+import numpy as np
 from pathlib import Path
 from sklearn.metrics.pairwise import linear_kernel
+
 import services.common as common
+
 from services.movie_service import get_movie_by_title
 
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -27,36 +27,6 @@ overview_matrix = joblib.load(MODEL_DIR / "overview_matrix.pkl")
 actor_matrix = joblib.load(MODEL_DIR / "actor_matrix.pkl")
 director_matrix = joblib.load(MODEL_DIR / "director_matrix.pkl")
 
-# ======================
-# 전처리
-# ======================
-
-def preprocess_recommend(text) :
-
-    # 결측치 방지
-    if pd.isna(text) :
-        return ''
-
-    # 문자열 아닌경우
-    if not isinstance(text, str) :
-        return ''
-
-    # 한글 영어 공백 제외 제거
-    text = re.sub(r'[^가-힣a-zA-Z\s]', '', text)
-
-    # 공백 제거
-    text = text.strip()
-
-    # 형태소분석 - 명사
-    tokens = common.okt.nouns(text)
-
-    # 불용어 제거
-    tokens = [
-        word for word in tokens
-        if word not in common.stopwords_recommend and len(word) > 1
-    ]
-
-    return ' '.join(tokens)
 
 # ======================
 # 추천함수

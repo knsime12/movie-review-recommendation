@@ -1,9 +1,10 @@
-import re
-from services.common import okt, stopwords_sentiment
-import pandas as pd
 import joblib
+
 from pathlib import Path
+
 from services.keyword_service import extract_keywords
+
+from utils.text_preprocessor import preprocess_sentiment
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 MODEL_DIR = BASE_DIR / "backend" / "models"
@@ -18,44 +19,6 @@ NEGATIVE_TEXT = "부정"
 MIN_RATING = 1
 MAX_RATING = 5
 
-# ======================
-# 감정분석 전처리
-# ======================
-def preprocess_sentiment(text) :
-
-    # 결측치 방지
-    if pd.isna(text) :
-        return ''
-
-    # 문자열 아닐경우 방지
-    if not isinstance(text, str) :
-        return ''
-
-    # 한글 제외 문자 제거
-    text = re.sub(r'[^가-힣\s]', '', text)
-
-    # 공백 정리
-    text = re.sub(r'\s+', ' ', text)
-
-    # 형태소 분석
-    tokens = okt.pos(text, stem = True)
-
-    words = []
-
-    for word, pos in tokens :
-
-        # 명사 / 형용사
-        if pos in ['Noun', 'Adjective'] :
-
-            # 불용어 제거
-            if word not in stopwords_sentiment :
-
-                # 2글자 이상
-                if len(word) > 1 :
-
-                    words.append(word)
-
-    return ' '.join(words)
 
 # ======================
 # 감정예측 함수
