@@ -1,6 +1,7 @@
 from database import get_connection
 import json
 
+# 리뷰 작성
 def create_review(user_id, movie_id, content, sentiment, positive_prob, expected_rating, keywords=None):
     conn = get_connection()
     cursor = conn.cursor()
@@ -94,6 +95,7 @@ def create_review(user_id, movie_id, content, sentiment, positive_prob, expected
         cursor.close()
         conn.close()
         
+# 리뷰 조회
 def get_reviews_by_user(user_id):
     conn = get_connection()
     cursor = conn.cursor()
@@ -142,135 +144,7 @@ def get_reviews_by_user(user_id):
         conn.close()
 
 
-def create_recommendation_history(user_id, base_movie_id, recommended_movie_id, similarity):
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    try:
-        # ======================
-        # 예외 처리
-        # ======================
-        if not user_id:
-            return {
-                "success": False,
-                "message": "로그인이 필요합니다."
-            }
-        
-        if not base_movie_id or not recommended_movie_id:
-            return {
-                "success": False,
-                "message": "추천 영화 정보가 없습니다."
-            }
-        
-        if base_movie_id == recommended_movie_id:
-            return {
-                "success": False,
-                "message": "같은 영화는 추천 이력에 저장할 수 없습니다."
-            }
-        
-        # ======================
-        # 추천 이력 중복 저장 방지
-        # ======================
-        check_query = """
-        SELECT id
-        FROM recommendation_history
-        WHERE user_id = %s
-            AND base_movie_id = %s
-            AND recommended_movie_id = %s
-        """
-
-        cursor.execute(
-            check_query, (user_id, base_movie_id, recommended_movie_id)
-        )
-
-        existing_history = cursor.fetchone()
-
-        if existing_history:
-            return {
-                "success": False,
-                "message": "이미 추천된 영화입니다.",
-                "duplicated": True
-            }
-        
-        # ======================
-        # 추천 이력 저장
-        # ======================
-        query = """
-        INSERT INTO recommendation_history
-        (user_id, base_movie_id, recommended_movie_id, similarity)
-        VALUES (%s, %s, %s, %s)
-        """
-
-        cursor.execute(
-            query, (user_id, base_movie_id, recommended_movie_id, similarity)
-        )
-
-        conn.commit()
-
-        return {
-            "success": True,
-            "message": "추천 이력이 저장되었습니다.",
-            "history_id": cursor.lastrowid
-        }
-    
-    except Exception as e:
-        conn.rollback()
-        print("추천 이력 저장 오류:", e)
-
-        return {
-            "success": False,
-            "message": "추천 이력 저장 중 오류가 발생했습니다.",
-            "error": str(e)
-        }
-    
-    finally:
-        cursor.close()
-        conn.close()
-
-def get_recommendations_by_user(user_id):
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    try:
-        query = """
-        SELECT
-            rh.id,
-            rh.user_id,
-            rh.base_movie_id,
-            rh.recommended_movie_id,
-            rh.similarity AS similarity,
-            rh.created_at,
-            m.title,
-            m.genre,
-            m.poster_url
-        FROM recommendation_history rh
-        JOIN movies m
-        ON rh.recommended_movie_id = m.id
-        WHERE rh.user_id = %s
-        ORDER BY rh.created_at DESC
-        """
-
-        cursor.execute(query, (user_id,))
-        rows = cursor.fetchall()
-
-        return {
-            "success": True,
-            "recommendations": rows
-        }
-    
-    except Exception as e:
-        print("추천 이력 조회 오류:", e)
-
-        return {
-            "success": False,
-            "message": "추천 이력 조회 중 오류가 발생했습니다.",
-            "error": str(e)
-        }
-    
-    finally:
-        cursor.close()
-        conn.close()
-
+# 리뷰 삭제
 def delete_review(review_id, user_id):
     conn = get_connection()
     cursor = conn.cursor()
@@ -329,6 +203,7 @@ def delete_review(review_id, user_id):
         cursor.close()
         conn.close()
 
+# 리뷰 중복 검사
 def check_review_exists(user_id, movie_id):
     conn = get_connection()
     cursor = conn.cursor()

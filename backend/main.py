@@ -18,10 +18,13 @@ from services.user_service import create_user, login_user
 from services.review_service import (
     create_review,
     get_reviews_by_user,
-    create_recommendation_history,
-    get_recommendations_by_user,
     delete_review,
     check_review_exists
+)
+
+from services.recommendation_history_service import (
+    create_recommendation_history,
+    get_recommendations_by_user
 )
 
 
