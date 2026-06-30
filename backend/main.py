@@ -8,7 +8,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from services.sentiment_service import predict_sentiment
-from services.recommend_service import recommend_movies
+from services.recommendation_service import recommend_movies
 from services.movie_service import (
     get_movie_detail,
     get_movies,
