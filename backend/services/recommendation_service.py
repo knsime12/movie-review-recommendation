@@ -1,8 +1,8 @@
 import numpy as np
-from pathlib import Path
+
 from sklearn.metrics.pairwise import linear_kernel
 
-import services.common as common
+from data.movie_loader import movie_df, movie_index
 
 from services.movie_service import get_movie_by_title
 
@@ -12,9 +12,6 @@ from core.model_loader import (
     actor_matrix,
     director_matrix
 )
-
-BASE_DIR = Path(__file__).resolve().parents[2]
-MODEL_DIR = BASE_DIR / "backend" / "models"
 
 GENRE_WEIGHT = 0.35
 OVERVIEW_WEIGHT = 0.35
@@ -33,7 +30,7 @@ MATCH_SCORE_RANGE = 40
 # ======================
 def recommend_movies(title, top_n = 5) :
 
-    if title not in common.movie_index:
+    if title not in movie_index:
         return {
             "succes": False,
             "message": "기준 영화를 찾을 수 없습니다.",
@@ -41,7 +38,7 @@ def recommend_movies(title, top_n = 5) :
             "recommendations": []
         }
 
-    idx = common.movie_index[title]
+    idx = movie_index[title]
 
     #  유사도
     genre_sim = linear_kernel(genre_matrix[idx], genre_matrix).flatten()
@@ -71,7 +68,7 @@ def recommend_movies(title, top_n = 5) :
         if i == idx:
             continue
         
-        movie = common.movie_df.iloc[i]
+        movie = movie_df.iloc[i]
 
         movie_title = movie["영화제목"]
 
