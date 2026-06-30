@@ -10,6 +10,17 @@ from services.movie_service import get_movie_by_title
 BASE_DIR = Path(__file__).resolve().parents[2]
 MODEL_DIR = BASE_DIR / "backend" / "models"
 
+GENRE_WEIGHT = 0.35
+OVERVIEW_WEIGHT = 0.35
+ACTOR_WEIGHT = 0.2
+DIRECTOR_WEIGHT = 0.1
+
+OVERVIEW_SCALE = 15
+ACTOR_SCALE = 10
+
+MATCH_SCORE_BASE = 60
+MATCH_SCORE_RANGE = 40
+
 # ===== 외부주입 ======
 genre_matrix = joblib.load(MODEL_DIR / "genre_matrix.pkl")
 overview_matrix = joblib.load(MODEL_DIR / "overview_matrix.pkl")
@@ -70,10 +81,10 @@ def recommend_movies(title, top_n = 5) :
 
     # 유사도 가중합
     final_sim = (
-        genre_sim * 0.35 +
-        np.clip(overview_sim * 15, 0, 1) * 0.35 +
-        np.clip(actor_sim * 10, 0, 1) * 0.2 +
-        director_sim * 0.1
+        genre_sim * GENRE_WEIGHT +
+        np.clip(overview_sim * OVERVIEW_SCALE, 0, 1) * OVERVIEW_WEIGHT +
+        np.clip(actor_sim * ACTOR_SCALE, 0, 1) * ACTOR_WEIGHT +
+        director_sim * DIRECTOR_WEIGHT
     )
 
     # 추천 영화 정렬 및 자신 제거
@@ -116,7 +127,7 @@ def recommend_movies(title, top_n = 5) :
             "title": movie_title,
             "genre": movie["장르"],
             "poster_url": movie["포스터이미지"],
-            "match_score": round(60 + final_sim[i] * 40, 1)
+            "match_score": round(MATCH_SCORE_BASE + final_sim[i] * MATCH_SCORE_RANGE, 1)
         })
 
         recommended_ids.add(movie_id)
