@@ -10,6 +10,15 @@ MODEL_DIR = BASE_DIR / "backend" / "models"
 tfidf = joblib.load(MODEL_DIR / "tfidf_sentiment.pkl")
 model = joblib.load(MODEL_DIR / "lr_model.pkl")
 
+POSITIVE_LABEL = 1
+POSITIVE_TEXT = "긍정"
+NEGATIVE_TEXT = "부정"
+
+MIN_RATING = 1
+MAX_RATING = 5
+
+KEYWORD_TOP_N = 7
+
 # ======================
 # 감정분석 전처리
 # ======================
@@ -91,7 +100,7 @@ def preprocess_keyword(text) :
 # ======================
 # 키워드 추출 함수
 # ======================
-def extract_keyword(review, top_n = 7) :
+def extract_keyword(review, top_n=KEYWORD_TOP_N) :
 
     # 전처리
     review_p = preprocess_keyword(review)
@@ -147,10 +156,13 @@ def predict_sentiment(review) :
     positive_prob = model.predict_proba(vec)[0][1]
 
     # 평점
-    rating = round(1 + positive_prob * 4, 0)
+    rating = round(
+        MIN_RATING + positive_prob * (MAX_RATING - MIN_RATING), 
+        0
+    )
 
     # 예측결과
-    sentiment = "긍정" if pred == 1 else "부정"
+    sentiment = POSITIVE_TEXT if pred == POSITIVE_LABEL else NEGATIVE_TEXT
 
     # 키워드 추출
     keywords = extract_keyword(review)
