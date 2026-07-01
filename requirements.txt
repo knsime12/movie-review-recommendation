@@ -7,3 +7,5 @@ scikit-learn==1.6.1
 konlpy
 joblib
 python-multipart
+requests
+pytest
