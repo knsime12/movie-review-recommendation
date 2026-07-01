@@ -9,7 +9,8 @@ from routers import (
     recommendation_router,
     review_router,
     sentiment_router,
-    user_router
+    user_router,
+    explanation_router
 )
 
 
@@ -37,3 +38,4 @@ def test_create_app_registers_routes():
     assert "/login" in paths
     assert "/reviews" in paths
     assert "/recommendation-history" in paths
+    assert "/recommendation-explanation" in paths

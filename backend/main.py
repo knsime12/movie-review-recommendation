@@ -9,7 +9,8 @@ from routers import (
     user_router,
     review_router,
     recommendation_history_router,
-    page_router
+    page_router,
+    explanation_router
 )
 
 from core.paths import BASE_DIR
@@ -36,6 +37,7 @@ def create_app():
     app.include_router(review_router.router)
     app.include_router(recommendation_history_router.router)
     app.include_router(page_router.router)
+    app.include_router(explanation_router.router)
 
     # ======================
     # 정적 파일 서비스
