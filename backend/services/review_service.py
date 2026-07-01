@@ -3,7 +3,7 @@ import json
 from services.recommendation_history_service import delete_recommendation_histories
 from utils.db_utils import get_db_cursor
 
-def _validate_review_input (user_id, movie_id, content):
+def _validate_review_input(user_id, movie_id, content):
     # ======================
     # 예외 처리
     # ======================
@@ -40,6 +40,17 @@ def _validate_review_input (user_id, movie_id, content):
     return None
 
 
+def _get_existing_review(cursor, user_id, movie_id):
+    query = """
+    SELECT id
+    FROM reviews
+    WHERE user_id = %s AND movie_id = %s
+    """
+
+    cursor.execute(query, (user_id, movie_id))
+    return cursor.fetchone()
+
+
 # 리뷰 작성
 def create_review(user_id, movie_id, content, sentiment, positive_prob, expected_rating, keywords=None):
 
@@ -50,17 +61,11 @@ def create_review(user_id, movie_id, content, sentiment, positive_prob, expected
     
     try:
         with get_db_cursor() as (conn, cursor):
-            # ======================
-            # 리뷰 중복 작성 방지
-            # ======================
-            check_query = """
-            SELECT id
-            FROM reviews
-            WHERE user_id = %s AND movie_id = %s
-            """
-
-            cursor.execute(check_query, (user_id, movie_id))
-            existing_review = cursor.fetchone()
+            existing_review = _get_existing_review(
+                cursor=cursor,
+                user_id=user_id,
+                movie_id=movie_id
+            )
 
             if existing_review:
                 return {

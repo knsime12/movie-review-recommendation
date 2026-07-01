@@ -221,3 +221,28 @@ def test_check_review_exists_false(monkeypatch):
     assert result["success"] is True
     assert result["exists"] is False
     assert cursor.execute_calls[0][1] == (1, 2)
+
+def test_get_existing_review_returns_review():
+    cursor = FakeCursor(fetchone_values=[{"id": 1}])
+
+    result = review_service._get_existing_review(
+        cursor=cursor,
+        user_id=1,
+        movie_id=2,
+    )
+
+    assert result == {"id": 1}
+    assert cursor.execute_calls[0][1] == (1, 2)
+
+
+def test_get_existing_review_returns_none():
+    cursor = FakeCursor(fetchone_values=[None])
+
+    result = review_service._get_existing_review(
+        cursor=cursor,
+        user_id=1,
+        movie_id=2,
+    )
+
+    assert result is None
+    assert cursor.execute_calls[0][1] == (1, 2)
