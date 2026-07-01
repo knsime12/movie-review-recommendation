@@ -641,3 +641,14 @@ sentiment-info p {
     background: transparent !important;
     padding: 0 !important;
 }
+
+.recommendation-explanation-row {
+    align-items: flex-start;
+}
+
+#recommendExplanationSummary {
+    max-width: 260px;
+    white-space: normal;
+    text-align: right;
+    line-height: 1.5;
+}

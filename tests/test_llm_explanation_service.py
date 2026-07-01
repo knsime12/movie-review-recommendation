@@ -70,3 +70,5 @@ def test_generate_recommendation_explanation_uses_review_keywords_as_supporting_
     assert "keywords는 사용자가 작성한 리뷰 원문에서 추출된 핵심 키워드" in prompt
     assert "현재 추천 알고리즘은 keywords를 직접 사용해서 영화를 고르지 않는다" in prompt
     assert "장르, 줄거리, 배우, 감독 유사도" in prompt
+    assert "summary는 35자 이내" in prompt
+    assert "summary에서 사용자가 쓴 리뷰 문장을 그대로 반복하지 마라" in prompt

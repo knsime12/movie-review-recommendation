@@ -130,9 +130,18 @@ async function loadResult() {
         const recommendResult = await recommendResponse.json();
         console.log("6. recommend result", recommendResult);
 
-        renderRecommendations(recommendResult.recommendations || []);
+        const recommendations = recommendResult.recommendations || [];
 
-        await saveRecommendationHistory(movieId, recommendResult.recommendations || []);
+        renderRecommendations(recommendations);
+
+        await loadRecommendationExplanation({
+            review,
+            sentimentResult: result,
+            baseMovie: movie,
+            recommendations
+        });
+
+        await saveRecommendationHistory(movieId, recommendations);
 
     } catch (error) {
         console.error("result.js error:", error);
@@ -296,6 +305,65 @@ function renderRecommendations(recommendations) {
 
         recommendGrid.appendChild(card);
     });
+}
+
+async function loadRecommendationExplanation({ review, sentimentResult, baseMovie, recommendations }) {
+    if (!Array.isArray(recommendations) || recommendations.length === 0) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/recommendation-explanation`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                review,
+                sentiment: sentimentResult.sentiment,
+                positive_prob: sentimentResult.positive_prob,
+                expected_rating: sentimentResult.expected_rating,
+                keywords: sentimentResult.keywords || [],
+                base_movie_title: baseMovie.title,
+                recommendations: recommendations.map(movie => ({
+                    title: movie.title,
+                    genre: movie.genre,
+                    match_score: movie.match_score
+                }))
+            })
+        });
+
+        if (!response.ok) {
+            console.warn("AI recommendation explanation request failed:", response.status);
+            return;
+        }
+
+        const explanation = await response.json();
+
+        if (!explanation.success) {
+            console.warn("AI recommendation explanation failed:", explanation);
+            return;
+        }
+
+        renderRecommendationExplanationSummary(explanation);
+
+    } catch (error) {
+        console.warn("AI recommendation explanation error:", error);
+    }
+}
+
+
+function renderRecommendationExplanationSummary(explanation) {
+    const summaryElement = document.querySelector("#recommendExplanationSummary");
+
+    if (!summaryElement) {
+        return;
+    }
+
+    const summary = explanation.summary || "유사 영화 추천";
+
+    summaryElement.textContent = summary;
+    summaryElement.title = summary;
 }
 
 function setText(selector, value) {
