@@ -1,7 +1,7 @@
 from utils.db_utils import get_db_cursor
 
-# 추천 이력 저장
-def create_recommendation_history(user_id, base_movie_id, recommended_movie_id, similarity):
+
+def _validate_recommendation_history_input(user_id, base_movie_id, recommended_movie_id):
     # ======================
     # 예외 처리
     # ======================
@@ -23,24 +23,56 @@ def create_recommendation_history(user_id, base_movie_id, recommended_movie_id, 
             "message": "같은 영화는 추천 이력에 저장할 수 없습니다."
         }
     
+    return None
+
+
+def _get_existing_recommendation_history(
+        cursor,
+        user_id,
+        base_movie_id,
+        recommended_movie_id,
+):
+    query = """
+    SELECT id
+    FROM recommendation_history
+    WHERE user_id = %s
+        AND base_movie_id = %s
+        AND recommended_movie_id = %s
+    """
+
+    cursor.execute(
+        query,
+        (user_id, base_movie_id, recommended_movie_id)    
+    )
+
+    return cursor.fetchone()
+
+
+# 추천 이력 저장
+def create_recommendation_history(
+        user_id, 
+        base_movie_id, 
+        recommended_movie_id, 
+        similarity
+):
+    
+    validation_error = _validate_recommendation_history_input(
+        user_id,
+        base_movie_id,
+        recommended_movie_id,
+    )
+
+    if validation_error:
+        return validation_error
+    
     try:
         with get_db_cursor() as (conn, cursor):
-            # ======================
-            # 추천 이력 중복 저장 방지
-            # ======================
-            check_query = """
-            SELECT id
-            FROM recommendation_history
-            WHERE user_id = %s
-                AND base_movie_id = %s
-                AND recommended_movie_id = %s
-            """
-
-            cursor.execute(
-                check_query, (user_id, base_movie_id, recommended_movie_id)
+            existing_history = _get_existing_recommendation_history(
+                cursor,
+                user_id,
+                base_movie_id,
+                recommended_movie_id,
             )
-
-            existing_history = cursor.fetchone()
 
             if existing_history:
                 return {
@@ -64,11 +96,12 @@ def create_recommendation_history(user_id, base_movie_id, recommended_movie_id, 
             )
 
             conn.commit()
+            history_id = cursor.lastrowid
 
         return {
             "success": True,
             "message": "추천 이력이 저장되었습니다.",
-            "history_id": cursor.lastrowid
+            "history_id": history_id
         }
     
     except Exception as e:
@@ -79,6 +112,7 @@ def create_recommendation_history(user_id, base_movie_id, recommended_movie_id, 
             "message": "추천 이력 저장 중 오류가 발생했습니다.",
             "error": str(e)
         }
+    
 
 # 추천 이력 조회
 def get_recommendations_by_user(user_id):
@@ -118,6 +152,7 @@ def get_recommendations_by_user(user_id):
             "message": "추천 이력 조회 중 오류가 발생했습니다.",
             "error": str(e)
         }
+
 
 # 추천 이력 삭제
 def delete_recommendation_histories(user_id, base_movie_id):
