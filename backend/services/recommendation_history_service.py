@@ -1,5 +1,3 @@
-from database import get_connection
-
 from utils.db_utils import get_db_cursor
 
 # 추천 이력 저장
