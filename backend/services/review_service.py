@@ -1,11 +1,9 @@
 import json
 
-from database import get_connection
 from services.recommendation_history_service import delete_recommendation_histories
 from utils.db_utils import get_db_cursor
 
-# 리뷰 작성
-def create_review(user_id, movie_id, content, sentiment, positive_prob, expected_rating, keywords=None):
+def _validate_review_input (user_id, movie_id, content):
     # ======================
     # 예외 처리
     # ======================
@@ -38,6 +36,17 @@ def create_review(user_id, movie_id, content, sentiment, positive_prob, expected
             "success": False,
             "message": "리뷰는 500자 이하로 작성해주세요."
         }
+    
+    return None
+
+
+# 리뷰 작성
+def create_review(user_id, movie_id, content, sentiment, positive_prob, expected_rating, keywords=None):
+
+    validation_error = _validate_review_input(user_id, movie_id, content)
+
+    if validation_error:
+        return validation_error
     
     try:
         with get_db_cursor() as (conn, cursor):
