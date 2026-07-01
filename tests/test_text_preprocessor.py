@@ -1,7 +1,7 @@
 import sys
 import types
 
-fake_tokenizer = types.ModuleType("nlp.tokenizer")
+fake_resources = types.ModuleType("nlp.resources")
 
 
 class FakeOkt:
@@ -18,8 +18,11 @@ class FakeOkt:
         return ["영화", "추천", "나", "스토리"]
 
 
-setattr(fake_tokenizer, "okt", FakeOkt())
-sys.modules["nlp.tokenizer"] = fake_tokenizer
+setattr(fake_resources, "okt", FakeOkt())
+setattr(fake_resources, "stopwords_sentiment", [])
+setattr(fake_resources, "stopwords_keyword", [])
+setattr(fake_resources, "stopwords_recommend", [])
+sys.modules["nlp.resources"] = fake_resources
 
 from utils import text_preprocessor
 

@@ -1,5 +1,7 @@
-from nlp.stopwords import stopwords_keyword
-from nlp.keyword_dictionary import movie_keywords
+from nlp.resources import (
+    movie_keywords,
+    stopwords_keyword
+)
 
 from utils.text_preprocessor import preprocess_keyword
 

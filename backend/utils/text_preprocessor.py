@@ -2,8 +2,8 @@ import re
 
 import pandas as pd
 
-from nlp.tokenizer import okt
-from nlp.stopwords import (
+from nlp.resources import (
+    okt,
     stopwords_sentiment,
     stopwords_keyword,
     stopwords_recommend

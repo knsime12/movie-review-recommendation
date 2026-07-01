@@ -7,7 +7,15 @@ fake_text_preprocessor = types.ModuleType("utils.text_preprocessor")
 setattr(fake_text_preprocessor, "preprocess_keyword", lambda review: review)
 sys.modules["utils.text_preprocessor"] = fake_text_preprocessor
 
+fake_resources = types.ModuleType("nlp.resources")
+setattr(fake_resources, "stopwords_keyword", [])
+setattr(fake_resources, "movie_keywords", [])
+sys.modules["nlp.resources"] = fake_resources
+
 from services import keyword_service
+
+sys.modules.pop("utils.text_preprocessor", None)
+sys.modules.pop("nlp.resources", None)
 
 
 class FakeVector:
