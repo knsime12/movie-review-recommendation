@@ -1,5 +1,13 @@
 import os
 import requests
+import pytest
+
+
+pytestmark = pytest.mark.skipif(
+    os.getenv("RUN_SMOKE_TESTS") != "true",
+    reason="Smoke tests require a running local server. Set RUN_SMOKE_TESTS=True to run."
+)
+
 
 BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:8000")
 
