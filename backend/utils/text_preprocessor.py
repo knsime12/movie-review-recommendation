@@ -3,7 +3,7 @@ import re
 import pandas as pd
 
 from nlp.resources import (
-    okt,
+    get_okt,
     stopwords_sentiment,
     stopwords_keyword,
     stopwords_recommend
@@ -42,7 +42,7 @@ def _is_valid_word(word, stopwords):
 def preprocess_sentiment(text):
     text = clean_korean_text(text)
 
-    tokens = okt.pos(text, stem=True)
+    tokens = get_okt().pos(text, stem=True)
 
     words = []
 
@@ -56,7 +56,7 @@ def preprocess_sentiment(text):
 def preprocess_keyword(text):
     text = clean_korean_text(text)
 
-    tokens = okt.pos(text, stem=True)
+    tokens = get_okt().pos(text, stem=True)
 
     words = []
 
@@ -71,7 +71,7 @@ def preprocess_recommend(text):
     text = clean_korean_english_text(text)
 
     # 형태소 분석 - 명사
-    tokens = okt.nouns(text)
+    tokens = get_okt().nouns(text)
 
     # 불용어 제거
     words = [

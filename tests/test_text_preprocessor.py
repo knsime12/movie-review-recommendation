@@ -18,7 +18,7 @@ class FakeOkt:
         return ["영화", "추천", "나", "스토리"]
 
 
-setattr(fake_resources, "okt", FakeOkt())
+setattr(fake_resources, "get_okt", lambda: FakeOkt())
 setattr(fake_resources, "stopwords_sentiment", [])
 setattr(fake_resources, "stopwords_keyword", [])
 setattr(fake_resources, "stopwords_recommend", [])

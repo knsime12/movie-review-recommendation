@@ -1,7 +1,16 @@
 from konlpy.tag import Okt
 
 
-okt = Okt()
+_okt = None
+
+
+def get_okt():
+    global _okt
+
+    if _okt is None:
+        _okt = Okt()
+
+    return _okt
 
 
 # 감정분석 불용어
