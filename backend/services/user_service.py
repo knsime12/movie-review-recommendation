@@ -1,30 +1,23 @@
-from database import get_connection
+from utils.db_utils import get_db_cursor
 
 
 def get_user_by_email(email):
-    conn = get_connection()
-    cursor = conn.cursor()
     
-    try:
-        query = """
-        SELECT id, username, email, password, created_at
-        FROM users
-        WHERE email = %s
-        """
+    query = """
+    SELECT id, username, email, password, created_at
+    FROM users
+    WHERE email = %s
+    """
         
+    with get_db_cursor() as (_, cursor):
         cursor.execute(query, (email,))
         user = cursor.fetchone()
         
-        return user
+    return user
     
-    finally:
-        cursor.close()
-        conn.close()
      
         
 def create_user(username, email, password):
-    conn = get_connection()
-    cursor = conn.cursor()
     
     try:
         existing_user = get_user_by_email(email)
@@ -34,17 +27,18 @@ def create_user(username, email, password):
                 "success": False,
                 "message": "이미 가입된 이메일입니다."
             }
+        
+        with get_db_cursor() as (conn, cursor):
+            query = """
+            INSERT INTO users (username, email, password)
+            VALUES (%s, %s, %s)
+            """
             
-        query = """
-        INSERT INTO users (username, email, password)
-        VALUES (%s, %s, %s)
-        """
-        
-        cursor.execute(
-            query, (username, email, password)
-        )
-        
-        conn.commit()
+            cursor.execute(
+                query, (username, email, password)
+            )
+            
+            conn.commit()
         
         return {
             "success": True,
@@ -52,7 +46,6 @@ def create_user(username, email, password):
         }
         
     except Exception as e:
-        conn.rollback()
         
         return {
             "success": False,
@@ -60,9 +53,6 @@ def create_user(username, email, password):
             "error": str(e)
         }
         
-    finally:
-        cursor.close()
-        conn.close()
         
 def login_user(email, password):
     user = get_user_by_email(email)
