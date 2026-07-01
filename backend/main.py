@@ -4,20 +4,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from typing import Optional
+
 from pydantic import BaseModel
 from routers import (
     movie_router, 
     sentiment_router,
     recommendation_router,
-    user_router
-)
-
-from services.review_service import (
-    create_review,
-    get_reviews_by_user,
-    delete_review,
-    check_review_exists
+    user_router,
+    review_router
 )
 
 from services.recommendation_history_service import (
@@ -45,6 +39,7 @@ app.include_router(movie_router.router)
 app.include_router(sentiment_router.router)
 app.include_router(recommendation_router.router)
 app.include_router(user_router.router)
+app.include_router(review_router.router)
 
 
 # ======================
@@ -58,25 +53,12 @@ app.mount("/html", StaticFiles(directory=FRONTEND_DIR / "html"), name="html")
 # ======================
 # 요청 모델
 # ======================
-class ReviewSaveRequest(BaseModel):
-    user_id: Optional[int] = None
-    movie_id: int
-    content: str
-    sentiment: str
-    positive_prob: Optional[float] = None
-    expected_rating: Optional[float] = None
-    keywords: Optional[list[str]] = None
-    
-
 class RecommendationHistoryRequest(BaseModel):
     user_id: int
     base_movie_id: int
     recommended_movie_id: int
     similarity: float
 
-
-class ReviewDeleteRequest(BaseModel):
-    user_id: int
 
 # ======================
 # 페이지 라우팅
@@ -94,24 +76,6 @@ def api_home():
     return {"message": "CineFeel API is running"}
 
 
-@app.post("/reviews")
-def save_review(request: ReviewSaveRequest):
-    return create_review(
-        user_id=request.user_id,
-        movie_id=request.movie_id,
-        content=request.content,
-        sentiment=request.sentiment,
-        positive_prob=request.positive_prob,
-        expected_rating=request.expected_rating,
-        keywords=request.keywords
-    )
-    
-
-@app.get("/users/{user_id}/reviews")
-def user_reviews(user_id: int):
-    return get_reviews_by_user(user_id=user_id)
-
-
 @app.get("/users/{user_id}/recommendations")
 def user_recommendations(user_id: int):
     return get_recommendations_by_user(user_id=user_id)
@@ -124,20 +88,4 @@ def save_recommendation_history(request: RecommendationHistoryRequest):
         base_movie_id=request.base_movie_id,
         recommended_movie_id=request.recommended_movie_id,
         similarity=request.similarity
-    )
-
-
-@app.delete("/reviews/{review_id}")
-def delete_review_api(review_id: int, request: ReviewDeleteRequest):
-    return delete_review(
-        review_id=review_id,
-        user_id=request.user_id
-    )
-
-
-@app.get("/reviews/check")
-def check_review(user_id: int, movie_id: int):
-    return check_review_exists(
-        user_id=user_id,
-        movie_id=movie_id
     )
