@@ -9,10 +9,10 @@ from pydantic import BaseModel
 from routers import (
     movie_router, 
     sentiment_router,
-    recommendation_router
+    recommendation_router,
+    user_router
 )
 
-from services.user_service import create_user, login_user
 from services.review_service import (
     create_review,
     get_reviews_by_user,
@@ -44,6 +44,7 @@ app.add_middleware(
 app.include_router(movie_router.router)
 app.include_router(sentiment_router.router)
 app.include_router(recommendation_router.router)
+app.include_router(user_router.router)
 
 
 # ======================
@@ -57,16 +58,6 @@ app.mount("/html", StaticFiles(directory=FRONTEND_DIR / "html"), name="html")
 # ======================
 # 요청 모델
 # ======================
-class SignupRequest(BaseModel):
-    username: str
-    email: str
-    password: str
-
-
-class LoginRequest(BaseModel):
-    email: str
-    password: str
-    
 class ReviewSaveRequest(BaseModel):
     user_id: Optional[int] = None
     movie_id: int
@@ -103,22 +94,6 @@ def api_home():
     return {"message": "CineFeel API is running"}
 
 
-@app.post("/signup")
-def signup(request: SignupRequest):
-    return create_user(
-        username=request.username,
-        email=request.email, 
-        password=request.password    
-    )
-
-
-@app.post("/login")
-def login(request: LoginRequest):
-    return login_user(
-        email=request.email,
-        password=request.password
-    )
-
 @app.post("/reviews")
 def save_review(request: ReviewSaveRequest):
     return create_review(
@@ -131,9 +106,11 @@ def save_review(request: ReviewSaveRequest):
         keywords=request.keywords
     )
     
+
 @app.get("/users/{user_id}/reviews")
 def user_reviews(user_id: int):
     return get_reviews_by_user(user_id=user_id)
+
 
 @app.get("/users/{user_id}/recommendations")
 def user_recommendations(user_id: int):
@@ -149,12 +126,14 @@ def save_recommendation_history(request: RecommendationHistoryRequest):
         similarity=request.similarity
     )
 
+
 @app.delete("/reviews/{review_id}")
 def delete_review_api(review_id: int, request: ReviewDeleteRequest):
     return delete_review(
         review_id=review_id,
         user_id=request.user_id
     )
+
 
 @app.get("/reviews/check")
 def check_review(user_id: int, movie_id: int):
