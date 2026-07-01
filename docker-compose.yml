@@ -1,0 +1,19 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: cinefeel-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: cinefeel
+    ports:
+    - "3307:3306"
+    volumes:
+    - cinefeel_mysql_data:/var/lib/mysql
+    - ./backend/scripts/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    command:
+    - --character-set-server=utf8mb4
+    - --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  cinefeel_mysql_data:
