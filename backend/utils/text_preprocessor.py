@@ -35,6 +35,10 @@ def clean_korean_english_text(text):
     return text.strip()
 
 
+def _is_valid_word(word, stopwords):
+    return word not in stopwords and len(word) > 1
+
+
 def preprocess_sentiment(text):
     text = clean_korean_text(text)
 
@@ -43,10 +47,8 @@ def preprocess_sentiment(text):
     words = []
 
     for word, pos in tokens:
-        if pos in ["Noun", "Adjective"]:
-            if word not in stopwords_sentiment:
-                if len(word) > 1:
-                    words.append(word)
+        if pos in ["Noun", "Adjective"] and _is_valid_word(word, stopwords_sentiment):
+            words.append(word)
 
     return " ".join(words)
 
@@ -59,10 +61,8 @@ def preprocess_keyword(text):
     words = []
 
     for word, pos in tokens:
-        if pos == "Noun":
-            if word not in stopwords_keyword:
-                if len(word) > 1:
-                    words.append(word)
+        if pos == "Noun" and _is_valid_word(word, stopwords_keyword):
+            words.append(word)
 
     return " ".join(words)
 
@@ -76,7 +76,7 @@ def preprocess_recommend(text):
     # 불용어 제거
     words = [
         word for word in tokens
-        if word not in stopwords_recommend and len(word) > 1
+        if _is_valid_word(word, stopwords_recommend)
     ]
 
     return " ".join(words)
