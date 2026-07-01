@@ -6,9 +6,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from typing import Optional
 from pydantic import BaseModel
-from routers import movie_router
+from routers import movie_router, sentiment_router
 
-from services.sentiment_service import predict_sentiment
 from services.recommendation_service import recommend_movies
 
 from services.user_service import create_user, login_user
@@ -41,6 +40,7 @@ app.add_middleware(
 
 
 app.include_router(movie_router.router)
+app.include_router(sentiment_router.router)
 
 
 # ======================
@@ -54,10 +54,6 @@ app.mount("/html", StaticFiles(directory=FRONTEND_DIR / "html"), name="html")
 # ======================
 # 요청 모델
 # ======================
-class ReviewRequest(BaseModel) :
-    content: str
-
-
 class RecommendRequest(BaseModel) :
     movie_title: str
     top_n: int = 5
@@ -107,11 +103,6 @@ def home() :
 @app.get("/api")
 def api_home():
     return {"message": "CineFeel API is running"}
-
-
-@app.post("/analyze")
-def analyze(request: ReviewRequest) :
-    return predict_sentiment(review=request.content)
 
 
 @app.post("/recommend")
