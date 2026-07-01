@@ -8,7 +8,20 @@ from core.model_loader import tfidf_sentiment
 KEYWORD_TOP_N = 7
 
 
-def extract_keywords(review, top_n=KEYWORD_TOP_N) :
+def _is_valid_keyword(word, score):
+    if score <= 0:
+        return False
+    
+    if " " in word:
+        return False
+    
+    if word in stopwords_keyword:
+        return False
+    
+    return len(word) > 1 and word in movie_keywords
+
+
+def extract_keywords(review, top_n=KEYWORD_TOP_N):
 
     # 전처리
     review_p = preprocess_keyword(review)
@@ -25,23 +38,16 @@ def extract_keywords(review, top_n=KEYWORD_TOP_N) :
     # 저장
     keywords = []
 
-    for idx in scores.argsort()[::-1] :
+    for idx in scores.argsort()[::-1]:
 
         word = features[idx]
 
-        if scores[idx] <= 0 :
+        if not _is_valid_keyword(word, scores[idx]):
             continue
 
-        if ' ' in word :
-            continue
+        keywords.append(word)
 
-        if word in stopwords_keyword :
-            continue
-
-        if len(word) > 1 and word in movie_keywords :
-            keywords.append(word)
-
-        if len(keywords) >= top_n :
+        if len(keywords) >= top_n:
             break
 
     return keywords
