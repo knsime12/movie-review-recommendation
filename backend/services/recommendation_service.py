@@ -32,7 +32,7 @@ def recommend_movies(title, top_n = 5) :
 
     if title not in movie_index:
         return {
-            "succes": False,
+            "success": False,
             "message": "기준 영화를 찾을 수 없습니다.",
             "title": title,
             "recommendations": []
@@ -88,13 +88,18 @@ def recommend_movies(title, top_n = 5) :
 
         if movie_id in recommended_ids:
             continue
+        
+        match_score = round(
+            float(MATCH_SCORE_BASE + final_sim[i] * MATCH_SCORE_RANGE),
+            1
+        )
 
         recommendations.append({
             "id": movie_id,
             "title": movie_title,
             "genre": movie["장르"],
             "poster_url": movie["포스터이미지"],
-            "match_score": round(MATCH_SCORE_BASE + final_sim[i] * MATCH_SCORE_RANGE, 1)
+            "match_score": match_score
         })
 
         recommended_ids.add(movie_id)
