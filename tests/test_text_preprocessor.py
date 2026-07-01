@@ -1,7 +1,4 @@
-import sys
-import types
-
-fake_resources = types.ModuleType("nlp.resources")
+from utils import text_preprocessor
 
 
 class FakeOkt:
@@ -11,20 +8,15 @@ class FakeOkt:
             ("스토리", "Noun"),
             ("좋다", "Adjective"),
             ("보다", "Verb"),
-            ("나", "Noun"),
+            ("가", "Noun"),
         ]
 
     def nouns(self, text):
-        return ["영화", "추천", "나", "스토리"]
+        return ["영화", "추천", "가", "스토리"]
 
 
-setattr(fake_resources, "get_okt", lambda: FakeOkt())
-setattr(fake_resources, "stopwords_sentiment", [])
-setattr(fake_resources, "stopwords_keyword", [])
-setattr(fake_resources, "stopwords_recommend", [])
-sys.modules["nlp.resources"] = fake_resources
-
-from utils import text_preprocessor
+def use_fake_okt(monkeypatch):
+    monkeypatch.setattr(text_preprocessor, "get_okt", lambda: FakeOkt())
 
 
 def test_clean_korean_text_removes_non_korean_characters():
@@ -45,6 +37,7 @@ def test_clean_korean_english_text_keeps_korean_and_english():
 
 
 def test_preprocess_sentiment_filters_by_pos_stopwords_and_length(monkeypatch):
+    use_fake_okt(monkeypatch)
     monkeypatch.setattr(text_preprocessor, "stopwords_sentiment", {"스토리"})
 
     result = text_preprocessor.preprocess_sentiment("영화 스토리 좋다")
@@ -53,6 +46,7 @@ def test_preprocess_sentiment_filters_by_pos_stopwords_and_length(monkeypatch):
 
 
 def test_preprocess_keyword_keeps_nouns_only(monkeypatch):
+    use_fake_okt(monkeypatch)
     monkeypatch.setattr(text_preprocessor, "stopwords_keyword", {"영화"})
 
     result = text_preprocessor.preprocess_keyword("영화 스토리 좋다")
@@ -61,6 +55,7 @@ def test_preprocess_keyword_keeps_nouns_only(monkeypatch):
 
 
 def test_preprocess_recommend_filters_nouns(monkeypatch):
+    use_fake_okt(monkeypatch)
     monkeypatch.setattr(text_preprocessor, "stopwords_recommend", {"영화"})
 
     result = text_preprocessor.preprocess_recommend("영화 추천 스토리")
