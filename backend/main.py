@@ -6,14 +6,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from typing import Optional
 from pydantic import BaseModel
+from routers import movie_router
 
 from services.sentiment_service import predict_sentiment
 from services.recommendation_service import recommend_movies
-from services.movie_service import (
-    get_movie_detail,
-    get_movies,
-    get_popular_movies,
-)
+
 from services.user_service import create_user, login_user
 from services.review_service import (
     create_review,
@@ -41,6 +38,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+app.include_router(movie_router.router)
 
 
 # ======================
@@ -107,25 +107,6 @@ def home() :
 @app.get("/api")
 def api_home():
     return {"message": "CineFeel API is running"}
-
-
-@app.get("/movies")
-def movies(keyword: str = "", page: int = 1, size: int = 12):
-    return get_movies(
-        keyword=keyword, 
-        page=page,
-        size=size
-    )
-
-
-@app.get("/movies/popular")
-def popular_movies(limit: int = 6):
-    return get_popular_movies(limit=limit)
-
-
-@app.get("/movies/{movie_id}")
-def movie_detail(movie_id: int):
-    return get_movie_detail(movie_id=movie_id)
 
 
 @app.post("/analyze")
