@@ -1,7 +1,6 @@
 const API_BASE_URL = "";
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("signup.js loaded");
 
     const signupForm = document.getElementById("signupForm");
 
@@ -50,8 +49,6 @@ async function handleSignup(event) {
         });
 
         const result = await response.json();
-
-        console.log("signup result:", result);
 
         if (!response.ok || !result.success) {
             showMessage(result.message || "회원가입에 실패했습니다.");

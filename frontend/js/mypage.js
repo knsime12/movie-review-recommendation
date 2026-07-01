@@ -37,8 +37,6 @@ async function loadMyReviews(userId) {
 
         const result = await response.json();
 
-        console.log("my reviews result =", result);
-
         if (!result.success) {
             throw new Error(result.message || "내 리뷰 조회 실패");
         }
@@ -187,8 +185,6 @@ async function loadMyRecommendations(userId) {
 
         const result = await response.json();
 
-        console.log("my recommendations result =", result);
-
         if (!result.success) {
             throw new Error(result.message || "추천받은 영화 조회 실패");
         }
@@ -290,8 +286,6 @@ async function deleteReview(reviewId) {
         });
 
         const result = await response.json();
-
-        console.log("delete review result=", result);
 
         if(!response.ok || !result.success) {
             alert(result.message || "리뷰 삭제 실패");

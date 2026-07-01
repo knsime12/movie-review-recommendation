@@ -35,8 +35,6 @@ async function saveRecommendationHistory(baseMovieId, recommendations) {
             similarity: Number(similarity)
         };
 
-        console.log("recommendation payload =", JSON.stringify(payload, null, 2));
-
         try {
             const response = await fetch(`${API_BASE_URL}/recommendation-history`, {
                 method: "POST",
@@ -47,9 +45,6 @@ async function saveRecommendationHistory(baseMovieId, recommendations) {
             });
 
             const result = await response.json().catch(() => null);
-
-            console.log("recommendation history status =", JSON.stringify(result, null, 2));
-            console.log("recommendation history save result =", result);
 
             if (!response.ok || result?.success === false) {
                 console.warn("추천 이력 저장 실패:", result);
@@ -74,7 +69,6 @@ async function loadResult() {
     }
 
     try {
-        console.log("1. result.js 시작");
 
         const movieResponse = await fetch(`${API_BASE_URL}/movies/${movieId}`);
 
@@ -83,7 +77,6 @@ async function loadResult() {
         }
 
         const movie = await movieResponse.json();
-        console.log("2. movie result", movie);
 
         renderReviewedMovie(movie, review);
 
@@ -102,15 +95,10 @@ async function loadResult() {
         }
 
         const result = await analyzeResponse.json();
-        console.log("3. analyze result", result);
 
         renderSentimentResult(result);
 
-        console.log("4. saveReview 실행 직전");
-
         await saveReview(movieId, review, result);
-
-        console.log("5. saveReview 완료");
 
         const recommendResponse = await fetch(`${API_BASE_URL}/recommend`, {
             method: "POST",
@@ -128,7 +116,6 @@ async function loadResult() {
         }
 
         const recommendResult = await recommendResponse.json();
-        console.log("6. recommend result", recommendResult);
 
         const recommendations = recommendResult.recommendations || [];
 
@@ -220,7 +207,6 @@ async function saveReview(movieId, review, result) {
     const saveKey = `savedReview_${movieId}_${review}`;
 
     if (sessionStorage.getItem(saveKey)) {
-        console.log("review save skip: 이미 저장됨");
         return;
     }
 
@@ -242,10 +228,6 @@ async function saveReview(movieId, review, result) {
         });
 
         const saveResult = await response.json().catch(() => null);
-
-        console.log("reviews status =", response.status);
-        console.log("review save result =", saveResult);
-        console.log("review save error =", saveResult?.error);
 
         if (!response.ok || saveResult?.success === false) {
             alert(saveResult?.message || "리뷰 저장 실패");

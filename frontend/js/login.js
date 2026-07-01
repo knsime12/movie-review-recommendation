@@ -36,8 +36,6 @@ async function login() {
 
         const result = await response.json();
 
-        console.log("login result:", result);
-
         if (!response.ok || !result.success) {
             if (message) {
                 message.textContent = result.message;
@@ -54,8 +52,6 @@ async function login() {
         sessionStorage.setItem("username", result.user.username);
         sessionStorage.setItem("userName", result.user.username);
         sessionStorage.setItem("email", result.user.email);
-
-        console.log("userId =", sessionStorage.getItem("userId"));
 
         alert("로그인되었습니다.");
 

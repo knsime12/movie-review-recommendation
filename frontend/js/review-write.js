@@ -79,8 +79,6 @@ async function checkDuplicateReview(userId, movieId) {
 
     const result = await response.json();
 
-    console.log("review duplicate check result =", result);
-
     if (!response.ok || !result.success) {
         throw new Error(result.message || "리뷰 중복 확인 실패");
     }

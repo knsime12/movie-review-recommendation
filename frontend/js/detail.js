@@ -23,8 +23,6 @@ async function loadMovieDetail() {
 
         const movie = await response.json();
 
-        console.log("영화 상세:", movie);
-
         const posterUrl = movie.poster_url || movie.posterUrl || "";
         const title = movie.title || "영화 제목";
         const genre = movie.genre || "장르 없음";

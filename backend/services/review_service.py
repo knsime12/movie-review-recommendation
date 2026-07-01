@@ -1,7 +1,12 @@
 import json
+import logging
 
 from services.recommendation_history_service import delete_recommendation_histories
 from utils.db_utils import get_db_cursor
+
+
+logger = logging.getLogger(__name__)
+
 
 def _validate_review_input(user_id, movie_id, content):
     # ======================
@@ -106,7 +111,7 @@ def create_review(user_id, movie_id, content, sentiment, positive_prob, expected
             }
         
     except Exception as e:
-        print("리뷰 저장 오류:", e)
+        logger.exception("리뷰 저장 오류")
 
         return {
             "success": False,
@@ -148,7 +153,7 @@ def get_reviews_by_user(user_id):
         }
         
     except Exception as e:
-        print("리뷰 조회 오류:", e)
+        logger.exception("리뷰 조회 오류")
         
         return {
             "success": False,
@@ -196,7 +201,7 @@ def delete_review(review_id, user_id):
             }
     
     except Exception as e:
-        print("리뷰 삭제 오류:", e)
+        logger.exception("리뷰 조회 오류")
 
         return {
             "success": False,
@@ -225,7 +230,7 @@ def check_review_exists(user_id, movie_id):
         }
     
     except Exception as e:
-        print("리뷰 중복 확인 오류:", e)
+        logger.exception("리뷰 중복 조회 오류")
 
         return {
             "success": False,

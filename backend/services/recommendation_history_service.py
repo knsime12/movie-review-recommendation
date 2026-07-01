@@ -1,4 +1,9 @@
+import logging
+
 from utils.db_utils import get_db_cursor
+
+
+logger = logging.getLogger(__name__)
 
 
 def _validate_recommendation_history_input(user_id, base_movie_id, recommended_movie_id):
@@ -105,7 +110,7 @@ def create_recommendation_history(
         }
     
     except Exception as e:
-        print("추천 이력 저장 오류:", e)
+        logger.exception("추천 이력 저장 오류")
 
         return {
             "success": False,
@@ -145,7 +150,7 @@ def get_recommendations_by_user(user_id):
         }
     
     except Exception as e:
-        print("추천 이력 조회 오류:", e)
+        logger.exception("추천 이력 조회 오류")
 
         return {
             "success": False,
@@ -167,7 +172,7 @@ def delete_recommendation_histories(user_id, base_movie_id):
             cursor.execute(query, (user_id, base_movie_id))
             conn.commit()
     except Exception as e:
-        print("추천 이력 삭제 오류:", e)
+        logger.exception("추천 이력 삭제 오류")
 
         return {
             "success": False,
