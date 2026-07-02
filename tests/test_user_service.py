@@ -61,6 +61,11 @@ def test_create_user_success(monkeypatch):
         "get_db_cursor",
         lambda: fake_db_cursor(conn, cursor),
     )
+    monkeypatch.setattr(
+        user_service,
+        "hash_password",
+        lambda password: "hashed-password",
+    )
 
     result = user_service.create_user(
         username="testuser",
@@ -73,7 +78,7 @@ def test_create_user_success(monkeypatch):
     assert cursor.execute_calls[0][1] == (
         "testuser",
         "test@example.com",
-        "1234",
+        "hashed-password",
     )
 
 
@@ -105,6 +110,11 @@ def test_login_user_success(monkeypatch):
             "password": "1234",
         },
     )
+    monkeypatch.setattr(
+        user_service,
+        "verify_password",
+        lambda password, stored: True,
+    )
 
     result = user_service.login_user("test@example.com", "1234")
 
@@ -135,6 +145,11 @@ def test_login_user_returns_false_when_password_is_wrong(monkeypatch):
             "email": email,
             "password": "1234",
         },
+    )
+    monkeypatch.setattr(
+        user_service,
+        "verify_password",
+        lambda password, stored: False,
     )
 
     result = user_service.login_user("test@example.com", "wrong-password")
