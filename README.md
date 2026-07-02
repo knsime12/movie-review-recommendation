@@ -213,12 +213,6 @@ http://localhost:8000 -> cinefeel-app:8000
 localhost:3307 -> cinefeel-mysql:3306
 ```
 
-※ MySQL은 로컬 `3307` 포트로 실행됩니다.
-
-```text
-localhost:3307 -> cinefeel-mysql:3306
-```
-
 ---
 
 ### 3. 영화 데이터 import
