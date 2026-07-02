@@ -21,3 +21,7 @@ def verify_password(password, stored_password):
     
     # Legacy fallback for users saved before password hashing.
     return hmac.compare_digest(password, stored_password)
+
+
+def is_password_hashed(password):
+    return password.startswith(BCRYPT_PREFIXES)

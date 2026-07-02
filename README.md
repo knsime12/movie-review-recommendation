@@ -17,6 +17,8 @@ FastAPI 기반 영화 리뷰 감성분석 및 콘텐츠 기반 영화 추천 웹
 - OpenAI API 기반 추천 기준 요약
 - 영화 조회, 리뷰 저장, 추천 이력 관리 API
 - Docker Compose 기반 FastAPI + MySQL 개발 환경 구성
+- bcrypt 기반 사용자 비밀번호 해싱
+- 기존 평문 비밀번호 로그인 시 해시 자동 업그레이드
 - 유닛 테스트 및 스모크 테스트 구성
 
 ---
@@ -28,6 +30,7 @@ FastAPI 기반 영화 리뷰 감성분석 및 콘텐츠 기반 영화 추천 웹
 - Recommendation: Cosine Similarity, Linear Kernel
 - Database: MySQL 8.0, Docker Compose
 - LLM: OpenAI API
+- Security: bcrypt
 - Test: pytest, FastAPI TestClient, mock
 
 ---
@@ -296,6 +299,4 @@ python -m pytest tests/test_api_smoke.py
 
 ## 개선 예정
 
-- 사용자 비밀번호 해싱 적용
-- 배포 환경용 환경변수 관리 정리
 - 모델/데이터 인코딩 정리

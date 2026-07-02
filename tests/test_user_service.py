@@ -115,6 +115,11 @@ def test_login_user_success(monkeypatch):
         "verify_password",
         lambda password, stored: True,
     )
+    monkeypatch.setattr(
+        user_service,
+        "is_password_hashed",
+        lambda password: True,
+    )
 
     result = user_service.login_user("test@example.com", "1234")
 
@@ -151,8 +156,69 @@ def test_login_user_returns_false_when_password_is_wrong(monkeypatch):
         "verify_password",
         lambda password, stored: False,
     )
+    monkeypatch.setattr(
+        user_service,
+        "is_password_hashed",
+        lambda password: False,
+    )
 
     result = user_service.login_user("test@example.com", "wrong-password")
 
     assert result["success"] is False
     assert "message" in result
+
+
+def test_update_user_password(monkeypatch):
+    conn = FakeConnection()
+    cursor = FakeCursor()
+
+    monkeypatch.setattr(
+        user_service,
+        "get_db_cursor",
+        lambda: fake_db_cursor(conn, cursor),
+    )
+
+    user_service.update_user_password(1, "hashed-password")
+
+    assert conn.committed is True
+    assert cursor.execute_calls[0][1] == ("hashed-password", 1)
+
+
+def test_login_user_upgrades_legacy_plaintext_password(monkeypatch):
+    updated_passwords = []
+
+    monkeypatch.setattr(
+        user_service,
+        "get_user_by_email",
+        lambda email: {
+            "id": 1,
+            "username": "testuser",
+            "email": email,
+            "password": "1234",
+        },
+    )
+    monkeypatch.setattr(
+        user_service,
+        "verify_password",
+        lambda password, stored: True,
+    )
+    monkeypatch.setattr(
+        user_service,
+        "is_password_hashed",
+        lambda password: False,
+    )
+    monkeypatch.setattr(
+        user_service,
+        "hash_password",
+        lambda password: "hashed-password",
+    )
+    monkeypatch.setattr(
+        user_service,
+        "update_user_password",
+        lambda user_id, password: updated_passwords.append((user_id, password)),
+    )
+
+    result = user_service.login_user("test@example.com", "1234")
+
+    assert result["success"] is True
+    assert updated_passwords == [(1, "hashed-password")]

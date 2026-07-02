@@ -1,6 +1,6 @@
 from utils.db_utils import get_db_cursor
 
-from core.security import hash_password, verify_password
+from core.security import hash_password, is_password_hashed, verify_password
 
 
 def get_user_by_email(email):
@@ -17,7 +17,18 @@ def get_user_by_email(email):
         
     return user
     
-     
+
+def update_user_password(user_id, password):
+    query = """
+    UPDATE users
+    SET password = %s
+    WHERE id = %s
+    """
+
+    with get_db_cursor() as (conn, cursor):
+        cursor.execute(query, (password, user_id))
+        conn.commit()
+
         
 def create_user(username, email, password):
     
@@ -74,6 +85,12 @@ def login_user(email, password):
             "success": False,
             "message": "비밀번호가 올바르지 않습니다."
         }
+    
+    if not is_password_hashed(user["password"]):
+        update_user_password(
+            user_id=user["id"],
+            password=hash_password(password),
+        )
         
     return {
         "success": True,
