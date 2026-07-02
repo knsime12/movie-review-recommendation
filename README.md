@@ -16,7 +16,7 @@ FastAPI 기반 영화 리뷰 감성분석 및 콘텐츠 기반 영화 추천 웹
 - 콘텐츠 기반 영화 추천
 - OpenAI API 기반 추천 기준 요약
 - 영화 조회, 리뷰 저장, 추천 이력 관리 API
-- Docker Compose 기반 MySQL 개발 DB 구성
+- Docker Compose 기반 FastAPI + MySQL 개발 환경 구성
 - 유닛 테스트 및 스모크 테스트 구성
 
 ---
@@ -200,10 +200,17 @@ python -m pip install -r requirements.txt
 
 ※ KoNLPy(Okt)를 사용하므로 로컬 환경에 Java가 필요할 수 있습니다.
 
-### 2. Docker MySQL 실행
+### 2. Docker compose 실행
 
 ```powershell
 docker compose up -d
+```
+
+Docker Compose로 FastAPI app 서버와 MySQL 서버를 함께 실행합니다.
+
+```text
+http://localhost:8000 -> cinefeel-app:8000
+localhost:3307 -> cinefeel-mysql:3306
 ```
 
 ※ MySQL은 로컬 `3307` 포트로 실행됩니다.
@@ -238,7 +245,9 @@ docker exec -it cinefeel-mysql mysql -uroot -p1234 cinefeel -e "SELECT COUNT(*) 
 982
 ```
 
-### 4. 서버 실행
+### 4. 로컬 서버 실행 ※ 선택사항
+
+※ Docker Compose로 실행 중이면 별도로 로컬 서버를 실행하지 않아도 됩니다.
 
 ```powershell
 uvicorn main:app --reload --app-dir backend
@@ -283,7 +292,6 @@ python -m pytest tests/test_api_smoke.py
 
 ## 개선 예정
 
-- FastAPI app Dockerfile 추가
 - 사용자 비밀번호 해싱 적용
 - 배포 환경용 환경변수 관리 정리
 - 모델/데이터 인코딩 정리
