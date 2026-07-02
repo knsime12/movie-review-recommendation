@@ -275,6 +275,8 @@ http://127.0.0.1:8000/docs
 | `OPENAI_API_KEY` | OpenAI API Key |
 | `OPENAI_EXPLANATION_MODEL` | 추천 기준 설명 모델 |
 
+`.env.example`을 참고해 로컬 `.env` 파일을 만들 수 있습니다.
+
 ---
 
 ## 테스트

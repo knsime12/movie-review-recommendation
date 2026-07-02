@@ -4,8 +4,8 @@ services:
     container_name: cinefeel-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: cinefeel
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-1234}
+      MYSQL_DATABASE: ${DB_NAME:-cinefeel}
     ports:
     - "3307:3306"
     volumes:
@@ -15,7 +15,7 @@ services:
     - --character-set-server=utf8mb4
     - --collation-server=utf8mb4_unicode_ci
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p1234"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -29,11 +29,11 @@ services:
       mysql:
         condition: service_healthy
     environment:
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_USER: root
-      DB_PASSWORD: 1234
-      DB_NAME: cinefeel
+      DB_HOST: ${DB_HOST:-mysql}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-1234}
+      DB_NAME: ${DB_NAME:-cinefeel}
     command: ["python", "backend/scripts/import_movies.py"]
     restart: "no"
 
@@ -47,11 +47,11 @@ services:
       movie-importer:
         condition: service_completed_successfully
     environment:
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_USER: root
-      DB_PASSWORD: 1234
-      DB_NAME: cinefeel
+      DB_HOST: ${DB_HOST:-mysql}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-1234}
+      DB_NAME: ${DB_NAME:-cinefeel}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       OPENAI_EXPLANATION_MODEL: ${OPENAI_EXPLANATION_MODEL:-gpt-5.4-nano}
     ports:
