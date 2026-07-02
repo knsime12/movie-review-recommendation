@@ -1,7 +1,10 @@
 import os
+import time
+from pathlib import Path
+
 import pandas as pd
 import pymysql
-from pathlib import Path
+from pymysql.connections import Connection
 
 
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -24,14 +27,28 @@ def clean(value):
     return str(value).strip()
 
 
-conn = pymysql.connect(
-    host=DB_HOST,
-    user=DB_USER,
-    password=DB_PASSWORD,
-    database=DB_NAME,
-    port=DB_PORT,
-    charset="utf8mb4"
-)
+def connect_with_retry(max_retries=10, delay_seconds=3) -> Connection:
+    for attempt in range(1, max_retries + 1):
+        try:
+            return pymysql.connect(
+                host=DB_HOST,
+                user=DB_USER,
+                password=DB_PASSWORD,
+                database=DB_NAME,
+                port=DB_PORT,
+                charset="utf8mb4",
+            )
+        except pymysql.MySQLError:
+            if attempt == max_retries:
+                raise
+
+            time.sleep(delay_seconds)
+
+    raise RuntimeError("Database connection retry loop ended unexpectedly.")
+
+
+conn = connect_with_retry()
+
 
 query = """
 INSERT INTO movies

@@ -296,7 +296,3 @@ python -m pytest tests/test_api_smoke.py
 ```
 
 ---
-
-## 개선 예정
-
-- 모델/데이터 인코딩 정리
