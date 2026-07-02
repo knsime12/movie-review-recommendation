@@ -241,7 +241,7 @@ docker exec -it cinefeel-mysql mysql -uroot -p1234 cinefeel -e "SELECT COUNT(*) 
 ### 4. 서버 실행
 
 ```powershell
-uvicorn backend.main:app --reload
+uvicorn main:app --reload --app-dir backend
 ```
 
 API 문서:
