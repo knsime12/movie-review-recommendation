@@ -217,14 +217,22 @@ localhost:3307 -> cinefeel-mysql:3306
 
 ### 3. 영화 데이터 import
 
-```powershell
-$env:DB_HOST="localhost"
-$env:DB_PORT="3307"
-$env:DB_USER="root"
-$env:DB_PASSWORD="1234"
-$env:DB_NAME="cinefeel"
+Docker Compose 실행 시 `movie-importer` 컨테이너가 한 번 실행되어 영화 데이터를 MySQL에 저장합니다.
 
-python backend/scripts/import_movies.py
+```powershell
+docker logs cinefeel-movie-importer
+```
+
+정상 실행 시 아래 로그가 출력됩니다.
+
+```text
+영화 데이터 982건 저장 완료
+```
+
+수동으로 다시 import 하려면 아래 명령어를 실행합니다.
+
+```powershell
+docker compose run --rm movie-importer
 ```
 
 데이터 확인:

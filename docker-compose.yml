@@ -19,6 +19,24 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  movie-importer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cinefeel-movie-importer
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: 1234
+      DB_NAME: cinefeel
+    command: ["python", "backend/scripts/import_movies.py"]
+    restart: "no"
+
   app:
     build:
       context: .
@@ -26,8 +44,8 @@ services:
     container_name: cinefeel-app
     restart: unless-stopped
     depends_on:
-      mysql:
-        condition: service_healthy
+      movie-importer:
+        condition: service_completed_successfully
     environment:
       DB_HOST: mysql
       DB_PORT: 3306
